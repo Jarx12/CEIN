@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  id_alumno: 1
+  id_asignatura: 1
+  nota: 1
+  periodo: 2025-09-12 13:41:32
+
+two:
+  id_alumno: 1
+  id_asignatura: 1
+  nota: 1
+  periodo: 2025-09-12 13:41:32

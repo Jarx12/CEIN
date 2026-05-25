@@ -1,0 +1,85 @@
+<div class="container mt-4">
+  <%# Navigation Header - Hidden when printing %>
+  <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">Control de Asistencias📋</h1>
+      <p class="text-muted mb-0">Reporte del dia</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+      <button onclick="window.print();" class="btn btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2">
+        🖨️ <span>Imprimir Reporte</span>
+      </button>
+
+      <%= link_to attendances_path, class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm" do %>
+        ↩️ Regresar
+      <% end %>
+    </div>
+  </div>
+
+  <%# Official Header - ONLY visible on the printed paper %>
+  <div class="d-none d-print-block text-center mb-4">
+    <h2 class="fw-bold mb-1">CENTRO DE EDUCACIÓN INICIAL (CEIN)</h2>
+    <h4 class="text-uppercase border-bottom pb-2">Reporte de Asistencia Estudiantil</h4>
+    <p class="small text-muted">Fecha de impresión: <%= Time.now.strftime("%d/%m/%Y %H:%M") %></p>
+  </div>
+
+  <%# The Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted">Fecha</th>
+            <th class="py-3 border-0 text-muted">Alumno</th>
+            <th class="py-3 border-0 text-muted text-center">Estado</th>
+            <th class="py-3 border-0 text-muted text-end pe-4 d-print-none">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @attendances.each do |attendance| %>
+            <tr>
+              <td class="ps-4">
+                <%= attendance.fecha.strftime("%d/%m/%Y") %>
+              </td>
+              <td class="fw-semibold">
+                <%= attendance.alumno.nombre_completo %>
+              </td>
+              <td class="text-center">
+                <%# Status badge (using standard text for print) %>
+                <span class="<%= attendance.presente ? 'text-success' : 'text-danger' %> fw-bold">
+                  <%= attendance.presente ? "Presente✅" : "Ausente❌" %>
+                </span>
+              </td>
+              <%# This entire column disappears when printing %>
+              <td class="text-end pe-4 d-print-none">
+                <%= button_to attendance, 
+                    method: :delete, 
+                    data: { turbo_confirm: "¿Está seguro de que desea eliminar este registro de asistencia? Esta acción no se puede deshacer." }, 
+                    class: "btn btn-outline-danger btn-sm rounded-pill px-3" do %>
+                  🗑️ <small>Eliminar</small>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media print {
+    /* Remove unnecessary UI elements from paper */
+    .d-print-none, .btn, .shadow-sm, .card {
+      box-shadow: none !important;
+      border: none !important;
+    }
+    
+    /* Force high contrast text */
+    body { color: black !important; background: white !important; }
+    
+    /* Ensure the table takes up the full page width */
+    .container { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  }
+</style>

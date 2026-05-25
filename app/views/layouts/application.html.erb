@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "SICEIN" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    
+    <style>
+      :root {
+        --nav-height: 70px;
+      }
+      .navbar-custom {
+        height: var(--nav-height);
+        background: #ffffff;
+        border-bottom: 2px solid #edf2f7;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      }
+      .navbar-brand {
+        font-weight: 800;
+        color: #0d6efd !important;
+        font-size: 1.4rem;
+      }
+      .nav-link {
+        font-weight: 600;
+        color: #4a5568 !important;
+        padding: 0.5rem 0.8rem !important;
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .nav-link:hover {
+        color: #0d6efd !important;
+        background: #f8fafc;
+      }
+      /* Estilo sólido para el usuario */
+      .user-pill {
+        background: #f1f5f9;
+        padding: 4px 12px;
+        border-radius: 50px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .user-name {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.85rem;
+      }
+      .user-role {
+        font-weight: 600;
+        color: #64748b;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-left: 1px solid #cbd5e1;
+        padding-left: 8px;
+      }
+      main {
+        margin-top: 25px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    
+    <nav class="navbar navbar-custom sticky-top">
+      <div class="container d-flex align-items-center justify-content-between">
+        
+        <%# Lado Izquierdo: Logo y Navegación Principal %>
+        <div class="d-flex align-items-center gap-4">
+          <a class="navbar-brand d-flex align-items-center gap-2" href="<%= user_dashboard_path %>">
+            <span>📚</span> SICEIN
+          </a>
+
+          <% if authenticated? %>
+            <ul class="nav d-none d-lg-flex align-items-center gap-1">
+              <% if current_user&.directora? || current_user&.coordinadora? || current_user&.secretaria? || current_user&.admin? %>
+                <li><%= link_to "🎓 Alumnos", alumnos_path, class: "nav-link" %></li>
+                <li><%= link_to "👨‍👩‍👧 Representantes", representantes_path, class: "nav-link" %></li>
+              <% end %>
+              <% if current_user&.secretaria? %>
+                <li><%= link_to "#️⃣ Notas", seleccionar_notas_secretaria_seccions_path, class: "nav-link" %></li>
+                <li><%= link_to "📋 Asistencia", seleccionar_asistencia_secretaria_seccions_path, class: "nav-link" %></li>
+              <% end %>
+
+              <% if current_user&.directora? || current_user&.coordinadora? || current_user&.admin?%>
+                <li><%= link_to "💼 RRHH", rrhh_path, class: "nav-link" %></li>
+              <% end %>
+
+              <% if current_user&.profesor? %>
+                <li><%= link_to "👨‍🏫 Mi Panel", profesor_dashboard_path, class: "nav-link" %></li>
+              <% end %>
+
+              <% if current_user&.directora? || current_user&.admin? %>
+                <li><%= link_to "⚙️ Admin", zadmin_path, class: "nav-link" %></li>
+              <% end %>
+            </ul>
+          <% end %>
+        </div>
+
+        <%# Lado Derecho: Identidad y Salida %>
+        <div class="d-flex align-items-center gap-3">
+          <% if authenticated? %>
+            <div class="user-pill d-none d-sm-flex">
+              <span class="user-name">
+                <%= current_user&.person&.name&.split(' ')&.first || "Usuario" %>
+              </span>
+              <span class="user-role">
+                <%= current_user ? t("roles.#{current_user.role}") : "Sin Sesión" %>
+              </span>
+            </div>
+
+            <%= button_to session_path, method: :delete, class: "btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold border-2" do %>
+              Salir 🚪
+            <% end %>
+          <% else %>
+            <%= link_to "Iniciar Sesión", new_session_path, class: "btn btn-primary rounded-pill px-4 fw-bold" %>
+          <% end %>
+        </div>
+          
+      </div>
+    </nav>
+
+    <main class="container">
+      <%# Flash Messages %>
+      <% flash.each do |type, msg| %>
+        <div class="alert <%= type == 'notice' ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
+          <div class="d-flex align-items-center gap-2">
+            <span><%= type == 'notice' ? '✅' : '⚠️' %></span>
+            <%= msg %>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+  </body>
+</html>

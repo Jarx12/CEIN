@@ -1,0 +1,74 @@
+<div class="container py-4">
+  <%# Encabezado de Bienvenida - Perfil Administrativo %>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm bg-dark text-white rounded-4 p-4" style="background: linear-gradient(45deg, #2c3e50, #000000);">
+        <div class="d-flex align-items-center gap-3">
+          <div class="bg-white rounded-circle p-3 text-dark shadow-sm">
+            <span style="font-size: 2rem;">📂</span>
+          </div>
+          <div>
+            <h1 class="h3 mb-1 fw-bold">Panel de Control: Secretaría</h1>
+            <p class="mb-0 opacity-75">Gestión Administrativa del Periodo: <strong><%= AcademicPeriod.current&.name %></strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="fw-bold text-dark mb-4">Módulos de Gestión</h3>
+
+  <%# Grid de Accesos Directos %>
+  <div class="row g-4">
+    <%# Módulo: Estudiantes %>
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition text-center p-4">
+        <div class="mb-3 text-primary">
+          <i class="bi bi-person-badge" style="font-size: 2.5rem;"></i>
+        </div>
+        <h5 class="fw-bold">Estudiantes</h5>
+        <p class="text-muted small">Inscripciones, expedientes y retiros.</p>
+        <%= link_to "Gestionar", alumnos_path, class: "btn btn-outline-primary rounded-pill w-100 mt-2" %>
+      </div>
+    </div>
+    <%# Módulo: Representantes %>
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition text-center p-4">
+        <div class="mb-3 text-primary">
+          <i class="bi bi-person-badge" style="font-size: 2.5rem;"></i>
+        </div>
+        <h5 class="fw-bold">Representantes</h5>
+        <p class="text-muted small">Gestión de representantes y permisos.</p>
+        <%= link_to "Gestionar", representantes_path, class: "btn btn-outline-primary rounded-pill w-100 mt-2" %>
+      </div>
+    </div>
+    <%# Módulo: Reportes de Notas %>
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition text-center p-4">
+        <div class="mb-3 text-primary">
+          <i class="bi bi-person-badge" style="font-size: 2.5rem;"></i>
+        </div>
+        <h5 class="fw-bold">Reportes de Notas</h5>
+        <p class="text-muted small">Visualización de Notas.</p>
+        <%= link_to "Gestionar", seleccionar_notas_secretaria_seccions_path, class: "btn btn-outline-primary rounded-pill w-100 mt-2" %>
+      </div>
+    </div>
+    <%# Módulo: Reportes de Asistencia %>
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition text-center p-4">
+        <div class="mb-3 text-primary">
+          <i class="bi bi-person-badge" style="font-size: 2.5rem;"></i>
+        </div>
+        <h5 class="fw-bold">Asistencia</h5>
+        <p class="text-muted small">Visualización de Control de Asistencias.</p>
+        <%= link_to "Gestionar", seleccionar_asistencia_secretaria_seccions_path, class: "btn btn-outline-primary rounded-pill w-100 mt-2" %>
+      </div>
+    </div>
+          <%# Botón de Inicio al final %>
+  <div class="mt-5 d-flex justify-content-center">
+    <%= link_to root_path, class: "btn btn-link text-decoration-none text-muted d-flex align-items-center gap-2" do %>
+      🏠 <span>Volver al Inicio</span>
+    <% end %>
+  </div>
+
+    

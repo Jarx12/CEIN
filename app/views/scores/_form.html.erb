@@ -1,0 +1,131 @@
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 40px auto;
+    }
+    .card-academic {
+        border-radius: 1.25rem;
+        border: none;
+    }
+    .form-control, .form-select {
+        border-radius: 0.75rem;
+        padding: 0.7rem 1rem;
+        border: 1px solid #dee2e6;
+        font-size: 1rem;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #4338ca;
+        box-shadow: 0 0 0 0.25rem rgba(67, 56, 202, 0.1);
+    }
+    .label-custom {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+    .nota-display {
+        background-color: #f8fafc;
+        border: 2px dashed #e2e8f0;
+        border-radius: 0.75rem;
+    }
+</style>
+
+<div class="container form-container">
+  <div class="card card-academic shadow-lg p-4 p-md-5">
+    <div class="text-center mb-4">
+        <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+            <span style="font-size: 1.5rem;">📝</span>
+        </div>
+        <h2 class="fw-bold text-dark mb-1"><%= tipo %></h2>
+        <p class="text-muted small">Registro de calificación cualitativa</p>
+        
+        <% if @seccion %>
+          <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-3">
+            Sección: <%= @seccion.nombre_seccion %>
+          </span>
+        <% end %>
+    </div>
+
+    <%= form_with model: score do |form| %>
+      <% if score.errors.any? %>
+        <div class="alert alert-danger rounded-3 p-3 mb-4">
+          <ul class="mb-0 small">
+            <% score.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%# 1. ESTUDIANTE: Solo los de la sección seleccionada %>
+      <div class="mb-3">
+        <%= form.label :enrollment_id, "Estudiante", class: "label-custom" %>
+        <%= form.collection_select :enrollment_id, (@enrollments || Enrollment.includes(:alumno).all), :id, :nombre_alumno, 
+            { prompt: "Seleccione un estudiante de la lista" }, 
+            { class: "form-select", required: true } %>
+      </div>
+
+<%# 2. ASIGNATURA: Fija con Código y Nombre %>
+      <div class="mb-3">
+        <%= form.label :asignatura_id, "Asignatura", class: "label-custom" %>
+        
+        <% if @subject %>
+          <%# 1. Mostramos visualmente el código y nombre usando tu método %>
+          <div class="nota-display p-3 border rounded-3 bg-light">
+            <span class="fw-bold text-dark">
+              <%= @subject.nombre_asignatura_con_codigo %>
+            </span>
+          </div>
+          <%# 2. Pasamos el ID de forma oculta para que el controlador lo reciba %>
+          <%= form.hidden_field :asignatura_id, value: @subject.id %>
+        <% else %>
+          <%# Fallback en caso de que entren directo sin pasar por el selector %>
+          <%= form.collection_select :asignatura_id, Asignatura.all, :id, :nombre_asignatura_con_codigo, 
+              { prompt: "Seleccione la materia" }, 
+              { class: "form-select", required: true } %>
+        <% end %>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-6">
+          <%= form.label :lapso, "Lapso", class: "label-custom" %>
+          <%= form.select :lapso, [[ "Lapso 1", 1 ], [ "Lapso 2", 2 ], [ "Lapso 3", 3 ]], 
+              { prompt: "Elegir..." }, 
+              { class: "form-select", required: true } %>
+        </div>
+
+        <div class="col-6">
+          <%= form.label :nota, "Calificación", class: "label-custom" %>
+          <%= form.select :nota, 
+              [['A (Excelente)', 'A'], 
+               ['B (Bueno)', 'B'], 
+               ['C (Regular)', 'C'], 
+               ['D (Deficiente)', 'D'], 
+               ['E (Muy Deficiente)', 'E']], 
+              { selected: score.new_record? ? nil : score.nota_letra, prompt: "Letra..." }, 
+              { class: "form-select fw-bold text-primary", required: true } %>
+        </div>
+      </div>
+
+      <%# Botones de Acción %>
+      <div class="d-grid gap-2">
+        <%= form.submit "Guardar Calificación", class: "btn btn-primary btn-lg rounded-pill fw-bold py-3 shadow-sm" %>
+        
+        <% 
+            if score.persisted? 
+              cancel_path = notas_por_alumno_path(score.enrollment.alumno)
+            elsif @seccion
+              # Si venimos del selector, regresar al selector manteniendo el modo
+              cancel_path = selector_scores_path(mode: 'individual', seccion_id: @seccion.id)
+            else 
+              cancel_path = scores_path
+            end
+        %>
+        <%= link_to "Cancelar", cancel_path, class: "btn btn-link text-decoration-none text-muted fw-semibold" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="row justify-content-center" style="margin-top: 80px;">
+  <div class="col-md-5 col-lg-4">
+    
+    <div class="card border-0 shadow-lg rounded-4">
+      <div class="card-body p-5">
+        
+        <%# Encabezado con icono de retorno %>
+        <div class="mb-4">
+          <%= link_to new_session_path, class: "text-decoration-none small fw-bold text-secondary" do %>
+            <i class="bi bi-arrow-left"></i> Volver al inicio
+          <% end %>
+          <h2 class="fw-bold text-primary mt-3">¿Olvidó su clave?</h2>
+          <p class="text-muted small">Le enviaremos las instrucciones de recuperación a su correo electrónico.</p>
+        </div>
+
+        <hr class="my-4 text-secondary opacity-25">
+
+        <%= form_with url: passwords_path, class: "needs-validation" do |form| %>
+          
+          <%# Campo Email %>
+          <div class="mb-4">
+            <label class="form-label fw-semibold text-secondary small">Correo Electrónico Registrado</label>
+            <%= form.email_field :email_address, 
+                required: true, 
+                autofocus: true, 
+                autocomplete: "username", 
+                placeholder: "nombre@ejemplo.com", 
+                value: params[:email_address],
+                class: "form-control form-control-lg border-2 bg-light rounded-3" %>
+            <div class="form-text mt-2" style="font-size: 0.75rem;">
+              <i class="bi bi-info-circle"></i> Verifique que el correo sea el mismo que usa en SICEIN.
+            </div>
+          </div>
+
+          <%# Botón de Envío %>
+          <div class="d-grid shadow-sm">
+            <%= form.submit "Enviar instrucciones", class: "btn btn-primary btn-lg fw-bold rounded-3 py-3" %>
+          </div>
+
+        <% end %>
+
+      </div>
+    </div>
+
+    <%# Pie de página %>
+    <p class="text-center mt-4 text-muted small">
+      Si no recibe el correo en unos minutos, revise su carpeta de spam.
+    </p>
+
+  </div>
+</div>

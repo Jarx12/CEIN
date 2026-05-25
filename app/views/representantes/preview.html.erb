@@ -1,0 +1,11 @@
+<%= turbo_frame_tag @frame_id do %>
+  <% if @representante %>
+    <div class="text-success small fw-bold mt-1">
+      ✅ <%= @representante.name %> <%= @representante.apellido %>
+    </div>
+  <% else %>
+    <div class="text-danger small fw-bold mt-1">
+      ❌ No encontrado. <%= link_to "Crear nuevo", new_representante_path, target: "_blank", class: "text-decoration-underline" %>
+    </div>
+  <% end %>
+<% end %>

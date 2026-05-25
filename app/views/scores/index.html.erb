@@ -1,0 +1,79 @@
+<div class="container mt-4">
+  <%# Navigation Breadcrumb / Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">Gestión de Notas</h1>
+    </div>
+      <%# Grouping the buttons together %>
+    <div class="d-flex gap-2">
+      <%= link_to zadmin_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        ↩️ <span class="ms-1">Regresar</span>
+      <% end %>
+
+      <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        🏠 <span class="ms-1">Ir al Inicio</span>
+      <% end %>
+    </div>
+  </div>
+
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card bg-primary text-white shadow-sm h-100">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-person-plus-fill mb-2" style="font-size: 2rem;"></i>
+          <h5 class="card-title">Registro Individual</h5>
+          <p class="card-text text-center small">Cargue una nota específica para un solo alumno.</p>
+          <%= link_to selector_scores_path(mode: 'individual'), class: "btn btn-light fw-bold px-4 rounded-pill" do %>
+            <div class="fs-2"></div> <strong>Carga Individual</strong>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card bg-success text-white shadow-sm h-100">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-grid-3x3-gap-fill mb-2" style="font-size: 2rem;"></i>
+          <h5 class="card-title">Registro Masivo</h5>
+          <p class="card-text text-center small">Cargue las notas de toda una sección a la vez.</p>
+          <%= link_to selector_scores_path(mode: 'masiva'), class: "btn btn-light fw-bold px-4 rounded-pill" do %>
+            <div class="fs-2"></div> <strong>Carga Masiva</strong>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-5">
+
+  <h2 class="h4 mb-3 text-secondary">Listado de Alumnos con Calificaciones</h2>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle bg-white shadow-sm rounded overflow-hidden">
+      <thead class="table-dark">
+        <tr>
+          <th class="ps-4">Alumno</th>
+          <th>Sección</th>
+          <th class="text-center">Historial</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @enrollments_con_notas.each do |enrollment| %>
+          <tr>
+            <td class="ps-4">
+              <span class="fw-bold text-uppercase"><%= enrollment.alumno&.apellido %></span>, <%= enrollment.alumno&.name %>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark border"><%= enrollment.seccion&.nombre_seccion %></span>
+            </td>
+            <td class="text-center">
+              <%= link_to alumno_scores_path(enrollment.alumno.id), class: "btn btn-outline-primary btn-sm rounded-pill px-3" do %>
+                <i class="bi bi-eye"></i> Ver Notas
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

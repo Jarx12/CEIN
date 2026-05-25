@@ -1,0 +1,121 @@
+es:
+  actions:
+    login: Iniciar sesión
+    register: Registrarse
+    submit: Enviar
+  activerecord:
+    attributes:
+      alumno:
+        apellido: Apellido
+        apellido2: Segundo Apellido
+        birthday: Fecha de nacimiento
+        curso_id: Nivel Actual
+        name: Nombre
+        name2: Segundo Nombre
+        representante_id: Cedula del Representante
+      enrollment:
+        academic_period: "Periodo académico"
+        seccion: "Sección"
+      asignatura:
+        codigo_asignatura: "Código"
+        nombre_asignatura: "Nombre"
+        nivel_id: "Nivel"
+    errors:
+      models:
+        alumno:
+          attributes:
+            apellido:
+              blank: no puede estar en blanco
+            birthday:
+              blank: no puede estar en blanco
+            curso_id:
+              blank: no puede estar en blanco
+            name:
+              blank: no puede estar en blanco
+            representante_id:
+              blank: no puede estar en blanco
+            representante:
+              required: "debe existir un representante con esa cédula"
+            seccion:
+              required: "debe existir una seccion con dicho numero"
+        asignatura:
+          attributes:
+            codigo_asignatura:
+              taken: "ya ha sido registrado en otra materia"
+              blank: "no puede estar en blanco"
+            nombre_asignatura:
+              blank: "es obligatorio"
+              taken: "el nombre de la asignatura ya está en uso"
+            nivel_id:
+              blank: "debe ser seleccionado"
+        score:
+          attributes:
+            nota:
+              less_than_or_equal_to: "debe ser menor o igual a %{count}"
+              greater_than_or_equal_to: "debe ser mayor o igual a %{count}"
+        cargo:
+          attributes:
+            nombre_cargo:
+              taken: "el nombre del cargo ya está en uso"
+        seccion:
+          attributes:
+            docente:
+              required: "debe existir un docente para esta sección"
+        enrollment:
+          attributes:
+            academic_period:
+              required: "es obligatorio (debe haber un periodo abierto)"
+        representante:
+          attributes:
+            cedula:
+              taken: "introducida ya se encuentra registrada en el sistema."
+  errors:
+    messages:
+      required: "es obligatorio"
+      blank: "no puede estar en blanco"
+      taken: "ya está en uso" # Genérico por si falla el específico
+
+  hello: Hola Mundo
+  date:
+    month_names: [~, Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre]
+    day_names: [Domingo, Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d %b"
+      long: "%d de %B de %Y"
+  datetime:
+    distance_in_words:
+      half_a_minute: "hace medio minuto"
+      less_than_x_seconds:
+        one:   "hace menos de 1 segundo"
+        other: "hace menos de %{count} segundos"
+      x_seconds:
+        one:   "hace 1 segundo"
+        other: "hace %{count} segundos"
+      less_than_x_minutes:
+        one:   "hace menos de 1 minuto"
+        other: "hace menos de %{count} minutos"
+      x_minutes:
+        one:   "hace 1 minuto"
+        other: "hace %{count} minutos"
+      about_x_hours:
+        one:   "hace alrededor de 1 hora"
+        other: "hace alrededor de %{count} horas"
+      x_days:
+        one:   "1 día"
+        other: "%{count} días"
+      about_x_months:
+        one:   "alrededor de 1 mes"
+        other: "alrededor de %{count} meses"
+      x_months:
+        one:   "1 mes"
+        other: "%{count} meses"
+      about_x_years:
+        one:   "alrededor de 1 año"
+        other: "alrededor de %{count} años"
+      over_x_years:
+        one:   "más de 1 año"
+        other: "más de %{count} años"
+      almost_x_years:
+        one:   "casi 1 año"
+        other: "casi %{count} años"

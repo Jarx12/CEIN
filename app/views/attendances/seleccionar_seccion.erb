@@ -1,0 +1,69 @@
+<style>
+  .input-group-lg > .form-select {
+    height: calc(3.5rem + 2px) !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 50px !important;
+    border-bottom-right-radius: 50px !important;
+    padding-left: 1rem !important;
+  }
+
+  .input-group-text {
+    border-top-left-radius: 50px !important;
+    border-bottom-left-radius: 50px !important;
+    background-color: #ffffff !important;
+    padding-left: 1.5rem !important;
+    border-right: none !important;
+  }
+
+  .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: none;
+  }
+</style>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <%# Main Action Card %>
+      <div class="card shadow border-0 rounded-4 overflow-hidden">
+        <%# Card Header with Icon %>
+        <div class="card-header bg-primary py-4 text-center text-white border-0">
+          <span style="font-size: 3rem;" class="d-block mb-2">📋</span>
+          <h4 class="fw-bold mb-0">Tomar Asistencia</h4>
+          <p class="small opacity-75 mb-0">Seleccione el grupo para iniciar el registro diario</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <%= form_with url: tomar_attendances_path, method: :get, local: true do |form| %>
+            
+            <div class="mb-4">
+              <%= form.label :seccion_id, "Sección / Aula", class: "form-label fw-bold text-secondary" %>
+                <%= form.collection_select :seccion_id, @secciones, :id, :nombre_seccion, 
+                    { prompt: "Elija una sección..." }, 
+                    { class: "form-select form-select-lg border-start-2 fw-semibold", required: true } %>
+              <div class="form-text mt-2">
+                Solo aparecerán las secciones activas del periodo actual.
+              </div>
+            </div>
+
+            <div class="d-grid gap-3">
+              <%= form.submit "Continuar al Listado", class: "btn btn-primary btn-lg rounded-pill shadow-sm fw-bold" %>
+              
+              <%= link_to attendances_path, class: "btn btn-light btn-lg rounded-pill border fw-semibold text-muted" do %>
+                ↩️ Cancelar y Volver
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <p class="text-muted small">
+          <i class="bi bi-info-circle"></i> 
+          Recuerde que una vez enviada, la asistencia aparecerá en el <strong>Registro General</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

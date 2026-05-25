@@ -1,0 +1,114 @@
+<div class="container py-4">
+  <%# Top Toolbar: Navigation and Info Badges %>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <%= link_to profesor_dashboard_path, class: "btn btn-outline-secondary rounded-pill px-4 d-inline-flex align-items-center shadow-sm transition-all hover-bg-light" do %>
+      <span class="me-2">⬅️</span> <span>Regresar al Panel</span>
+    <% end %>
+
+    <div class="d-flex gap-2">
+      <span class="badge bg-white text-primary border border-primary-subtle rounded-pill px-3 py-2 shadow-sm">
+        <%= @seccion.nivel.nombre_nivel %>
+      </span>
+      <span class="badge bg-primary text-white rounded-pill px-3 py-2 shadow-sm">
+        Sección: <%= @seccion.nombre_seccion %>
+      </span>
+    </div>
+  </div>
+
+  <%# Section Info Card %>
+  <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4">
+    <div class="card-body p-4">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h2 class="fw-bold text-dark mb-1">Listado de Alumnos</h2>
+          <p class="text-muted mb-0">
+            Periodo Actual: <strong><%= AcademicPeriod.current&.name %></strong> 
+            <span class="mx-2 text-silver">|</span> 
+            Total: <strong><%= @enrollments.count %> estudiantes</strong>
+          </p>
+        </div>
+        
+        <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+          <div class="d-flex flex-wrap justify-content-lg-end gap-2">
+            <%= link_to nueva_lista_profesor_seccion_attendances_path(@seccion), class: "btn btn-outline-primary rounded-pill px-3 shadow-sm fw-bold" do %>
+              <span>📅 Pasar Asistencia</span>
+            <% end %>
+            <%= link_to profesor_seccion_attendances_path(@seccion), class: "btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold" do %>
+            <span class="me-1">📊</span> Historial de Asistencia
+            <% end %>
+
+            <%= link_to profesor_seccion_scores_path(@seccion), class: "btn btn-primary rounded-pill px-3 shadow-sm fw-bold" do %>
+              <span class="me-1">📝</span> Ver Notas
+            <% end %>
+
+            <%= link_to planilla_profesor_seccion_scores_path(@seccion), class: "btn btn-primary rounded-pill px-3 shadow-sm fw-bold" do %>
+              <span class="me-1">📤</span> Cargar Notas
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Students Table %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3 text-muted fw-bold" style="font-size: 0.85rem; width: 40%;">ESTUDIANTE</th>
+            <th class="py-3 text-muted fw-bold" style="font-size: 0.85rem;">ID REPRESENTANTE</th>
+            <th class="pe-4 py-3 text-end text-muted fw-bold" style="font-size: 0.85rem;">ACCIONES RÁPIDAS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @enrollments.any? %>
+            <% @enrollments.each do |enrollment| %>
+              <tr>
+                <td class="ps-4 py-3">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-circle me-3 bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;">
+                      <%= enrollment.alumno.apellido[0].upcase %>
+                    </div>
+                    <div>
+                      <div class="fw-bold text-dark"><%= enrollment.alumno.apellido %>, <%= enrollment.alumno.name %></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <span class="text-muted fw-medium"><%= enrollment.alumno.representante_id %></span>
+                </td>
+                <td class="pe-4 py-3 text-end">
+                  <div class="btn-group shadow-sm rounded-pill overflow-hidden border">
+                    <%= link_to profesor_seccion_score_path(@seccion, enrollment), class: "btn btn-white btn-sm px-3", title: "Ver Historial" do %>
+                      <span class="text-success small fw-bold">📊 Ver Notas</span>
+                    <% end %>
+                    <%= link_to new_profesor_seccion_score_path(@seccion, enrollment_id: enrollment.id), class: "btn btn-white btn-sm px-3 border-start", title: "Cargar Nota" do %>
+                      <span class="text-primary small fw-bold">➕ Nota</span>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="3" class="text-center py-5 text-muted">
+                <span class="d-block mb-2" style="font-size: 2rem;">👤</span>
+                No hay alumnos inscritos en esta sección.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn-white { background-color: #fff; border: none; }
+  .btn-white:hover { background-color: #f8fafc; color: inherit; }
+  .bg-primary-subtle { background-color: #e0e7ff !important; }
+  .transition-all { transition: all 0.2s ease-in-out; }
+  .hover-bg-light:hover { background-color: #f1f5f9 !important; transform: translateX(-3px); }
+  .text-silver { color: #cbd5e1; }
+</style>

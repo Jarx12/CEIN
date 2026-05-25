@@ -1,0 +1,66 @@
+<div class="container mt-5">
+  <%# Hero Section: The Big Welcome %>
+  <div class="p-5 mb-4 bg-light rounded-5 shadow-sm border-0 position-relative overflow-hidden">
+    <div class="row align-items-center">
+      <div class="col-md-8 position-relative" style="z-index: 2;">
+        <h6 class="text-primary fw-bold text-uppercase mb-2" style="letter-spacing: 2px;">Panel de Control</h6>
+        <h1 class="display-4 fw-bold text-dark mb-3">Bienvenido al Sistema CEIN</h1>
+        <p class="lead text-muted mb-4">Gestión integral del Centro de Educación Inicial. Administre inscripciones, secciones y calificaciones de forma eficiente.</p>
+        <div class="d-flex gap-2">
+          <%= link_to "Registrar Alumno", new_alumno_path, class: "btn btn-primary btn-lg px-4 rounded-pill shadow" %>
+          <%= link_to "Ver Alumnos", alumnos_path, class: "btn btn-outline-secondary btn-lg px-4 rounded-pill" %>
+        </div>
+      </div>
+      <div class="col-md-4 text-center d-none d-md-block">
+         <span style="font-size: 8rem; opacity: 0.1;" class="user-select-none">🏫</span>
+      </div>
+    </div>
+  </div>
+
+  <%# Quick Action Cards %>
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm hover-shadow transition-all" style="border-radius: 20px;">
+        <div class="card-body p-4 text-center">
+          <div class="bg-primary-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+             <span style="font-size: 1.5rem;">📝</span>
+          </div>
+          <h5 class="fw-bold">Gestión de Notas</h5>
+          <p class="text-muted small">Carga masiva por seccion o individuales para cada alumno.</p>
+          <%= link_to "Ir a Notas", scores_path, class: "btn btn-light w-100 rounded-pill border" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm hover-shadow transition-all" style="border-radius: 20px;">
+        <div class="card-body p-4 text-center">
+          <div class="bg-success-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+             <span style="font-size: 1.5rem;">👪</span>
+          </div>
+          <h5 class="fw-bold">Representantes</h5>
+          <p class="text-muted small">Administre la informacion de los representantes.</p>
+          <%= link_to "Ver Representantes", representantes_path, class: "btn btn-light w-100 rounded-pill border" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm hover-shadow transition-all" style="border-radius: 20px;">
+        <div class="card-body p-4 text-center">
+          <div class="bg-warning-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+             <span style="font-size: 1.5rem;">💼</span>
+          </div>
+          <h5 class="fw-bold">Recursos Humanos</h5>
+          <p class="text-muted small">Administre la informacion de la planta de personal.</p>
+          <%= link_to "Ir a RR.HH", rrhh_path, class: "btn btn-light w-100 rounded-pill border" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow:

@@ -1,0 +1,5 @@
+class AddSeccionToAlumnos < ActiveRecord::Migration[8.0]
+  def change
+    add_reference :alumnos, :seccion, null: true, foreign_key: true
+  end
+end

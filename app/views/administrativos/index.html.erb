@@ -1,0 +1,121 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">
+        Gestión de Administrativos💼 
+        <span class="badge bg-primary-subtle text-primary rounded-pill fs-6 align-middle ms-2">
+          <%= @administrativos.count %> Personal
+        </span>
+      </h1>
+      <p class="text-muted mb-0">Directorio de personal administrativo y técnico del CEIN</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+      <%= link_to rrhh_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        ↩️ <span class="ms-1">Regresar</span>
+      <% end %>
+
+      <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        🏠 <span class="ms-1">Ir al Inicio</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Action Bar %>
+  <div class="mb-4">
+    <%= link_to new_administrativo_path, class: "btn btn-primary btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
+      ➕ <span>Registrar Administrativo</span>
+    <% end %>
+  </div>
+
+  <%# Staff Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted">Nombre y Apellido</th>
+            <th class="py-3 border-0 text-muted">Cédula</th>
+            <th class="py-3 border-0 text-muted">Cargo / Función</th>
+            <th class="py-3 border-0 text-muted">Antigüedad</th> <%# Added column %>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @administrativos.each do |administrativo| %>
+            <tr>
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 0.8rem;">
+                    <%= administrativo.name[0] %><%= administrativo.apellido[0] %>
+                  </div>
+                  <div class="fw-bold text-dark text-capitalize">
+                    <%= administrativo.name %> <%= administrativo.apellido %>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="text-muted">V-<%= administrativo.cedula %></span>
+              </td>
+              <td>
+                <% if administrativo.cargo.present? %>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                    <%= administrativo.cargo.nombre_cargo %>
+                  </span>
+                <% else %>
+                  <span class="badge bg-light text-muted border border-dashed rounded-pill px-3 py-2">
+                    Sin cargo
+                  </span>
+                <% end %>
+              </td>
+
+              <%# Service Time Logic %>
+              <td>
+                <% start_date = administrativo.respond_to?(:fecha_ingreso) ? administrativo.fecha_ingreso : administrativo.created_at %>
+                <% if start_date %>
+                  <div class="text-dark small fw-bold">
+                    <%= distance_of_time_in_words(start_date, Time.now).capitalize %>
+                  </div>
+                  <div class="text-muted" style="font-size: 0.7rem;">
+                    Desde: <%= start_date.strftime("%d/%m/%Y") %>
+                  </div>
+                <% else %>
+                  <span class="text-muted small">---</span>
+                <% end %>
+              </td>
+
+              <td class="text-end pe-4">
+                <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                  <%= link_to administrativo, class: "btn btn-white btn-sm border-end px-3 py-2", title: "Ver ficha" do %>
+                    👁️ Ver
+                  <% end %>
+                  <%= link_to edit_administrativo_path(administrativo), class: "btn btn-white btn-sm px-3 py-2", title: "Editar" do %>
+                    ✏️ Editar
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @administrativos.empty? %>
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted fst-italic">
+                No hay personal administrativo registrado actualmente.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-primary-subtle { background-color: #e7f1ff; color: #0d6efd !important; }
+  .bg-success-subtle { background-color: #d1e7dd; color: #0f5132 !important; }
+  .btn-white { background: white; color: #555; border: 1px solid #dee2e6; }
+  .btn-white:hover { background: #f8f9fa; color: #0d6efd; }
+  .table tr { transition: background-color 0.2s ease; }
+  .border-dashed { border-style: dashed !important; }
+</style>

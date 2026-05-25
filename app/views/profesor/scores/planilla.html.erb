@@ -1,0 +1,70 @@
+<div class="container mt-4">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <%= link_to profesor_seccion_path(@seccion), class: "btn btn-light rounded-pill border" do %>
+          <span class="me-2">⬅️</span> <span>Regresar</span>
+        <% end %>
+        <h4 class="fw-bold mb-0">Carga Masiva: <%= @subject&.nombre_asignatura %> - Seccion: <%= @seccion.nombre_seccion %> -  (<%= @seccion.nivel.nombre_nivel %>)</h4>
+        <span class="badge bg-primary rounded-pill px-3">Lapso <%= @lapso_actual %></span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <%= form_with url: planilla_profesor_seccion_scores_path(@seccion), method: :get, class: "row g-3 mb-4 bg-light p-3 rounded-3" do |f| %>
+        <div class="col-md-5">
+          <%= f.label :subject_id, "Seleccionar Asignatura", class: "form-label small fw-bold" %>
+          <%= f.collection_select :subject_id, @seccion.nivel.asignaturas, :id, :nombre_asignatura, { selected: params[:subject_id] }, { class: "form-select", onchange: "this.form.submit()" } %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :lapso, "Lapso", class: "form-label small fw-bold" %>
+          <%= f.select :lapso, [1, 2, 3], { selected: @lapso_actual }, { class: "form-select", onchange: "this.form.submit()" } %>
+        </div>
+      <% end %>
+
+      <%# Formulario de Envío Masivo %>
+      <%= form_with url: bulk_update_profesor_seccion_scores_path(@seccion), method: :post do |f| %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Estudiante</th>
+                <th class="text-center" style="width: 200px;">Calificación</th>
+                <th class="text-center">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @enrollments.each_with_index do |enrollment, index| %>
+                <% score = enrollment.scores.find_by(asignatura: @subject, lapso: @lapso_actual) %>
+                <tr>
+                  <td>
+                    <div class="fw-bold"><%= enrollment.alumno.nombre_completo %></div>
+                    <%= hidden_field_tag "scores[#{index}][enrollment_id]", enrollment.id %>
+                    <%= hidden_field_tag "scores[#{index}][asignatura_id]", @subject.id %>
+                    <%= hidden_field_tag "scores[#{index}][lapso]", @lapso_actual %>
+                  </td>
+                  <td>
+                    <%= select_tag "scores[#{index}][nota]", 
+                        options_for_select([["A (Exc)", "A"], ["B (Bueno)", "B"], ["C (Reg)", "C"], ["D (Suf)", "D"], ["E (Def)", "E"]], score&.nota_letra), 
+                        { include_blank: "Sin nota", class: "form-select form-select-sm rounded-pill border-primary" } %>
+                  </td>
+                  <td class="text-center">
+                    <% if score %>
+                      <span class="text-success small">● Guardado</span>
+                    <% else %>
+                      <span class="text-muted small">○ Pendiente</span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="text-center mt-4">
+          <%= f.submit "Guardar Notas", class: "btn btn-primary btn-lg rounded-pill px-5 shadow-sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

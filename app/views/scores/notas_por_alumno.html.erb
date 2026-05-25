@@ -1,0 +1,121 @@
+<div class="container mt-5 mb-5">
+  <%# 1. Header Card %>
+  <div class="card shadow-sm border-0 mb-4" style="max-width: 1000px; margin: auto; border-radius: 15px;">
+    <div class="card-body p-4">
+      <div class="d-md-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="text-muted text-uppercase mb-1" style="letter-spacing: 1.5px; font-size: 0.75rem;">Boletín Informativo</h6>
+          <h2 class="text-primary fw-bold mb-0"><%= @alumno.name %> <%= @alumno.apellido %></h2>
+          <div class="mt-2 text-md-start text-center">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">
+              <%= @enrollment&.seccion&.nombre_seccion || "Sin Sección" %>
+            </span>
+            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 ms-2">
+              <%= AcademicPeriod.current&.name %>
+            </span>
+          </div>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2 justify-content-center btn-print-hide">
+          <%= link_to scores_path, class: "btn btn-outline-secondary btn-sm rounded-pill px-4" do %>
+             Regresar
+          <% end %>
+          <button class="btn btn-primary btn-sm rounded-pill px-4 shadow" onclick="window.print()">
+             Imprimir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# 2. Main Grades Table %>
+  <div class="card shadow-sm border-0" style="max-width: 1000px; margin: auto; border-radius: 15px; overflow: hidden;">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-dark text-white">
+          <tr>
+            <th class="ps-4 py-3 border-0">Asignatura</th>
+            <th class="py-3 border-0 text-center">Lapso 1</th>
+            <th class="py-3 border-0 text-center">Lapso 2</th>
+            <th class="py-3 border-0 text-center">Lapso 3</th>
+            <th class="py-3 border-0 text-center bg-primary text-white" style="width: 120px;">NOTA FINAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @scores.any? %>
+            <% @scores.group_by(&:asignatura).each do |asignatura, scores_array| %>
+              <tr>
+                <td class="ps-4 py-4">
+                  <div class="fw-bold text-dark"><%= asignatura.nombre_asignatura %></div>
+                  <div class="text-muted small" style="font-size: 0.65rem;">
+                    CÓDIGO: <%= asignatura.codigo_asignatura.presence || "S/C" %>
+                  </div>
+                </td>
+
+                <% [1, 2, 3].each do |num| %>
+                  <% score_match = scores_array.find { |s| s.lapso.to_i == num } %>
+                  
+                  <td class="text-center py-4" style="min-width: 100px;">
+                    <% if score_match %>
+                      <div class="d-inline-flex align-items-center gap-2">
+                        <%# Mostramos la LETRA mediante el método del modelo %>
+                        <span class="fw-bold fs-5 <%= score_match.nota < 10 ? 'text-danger' : 'text-primary' %>">
+                          <%= score_match.nota_letra %>
+                        </span>
+                        
+                        <%= link_to edit_score_path(score_match), 
+                            class: "btn-print-hide", 
+                            style: "text-decoration: none; font-size: 0.85rem;", 
+                            title: "Editar nota" do %>
+                          📝
+                        <% end %>
+                      </div>
+                    <% else %>
+                      <span class="text-muted opacity-25">--</span>
+                    <% end %>
+                  </td>
+                <% end %>
+
+                <%# Columna de Promedio Corregida %>
+                <td class="text-center bg-primary-subtle border-start border-primary-subtle py-4">
+                  <%# Mapeamos a .nota (número) para evitar error de suma de strings %>
+                  <% active_values = scores_array.map(&:nota).compact %>
+
+                  <span class="fw-bold text-primary fs-5">
+                    <% if active_values.any? %>
+                      <%# Promedio basado en los 3 lapsos oficiales %>
+                      <%= Score.convertir_a_letra((active_values.sum.to_f / 3).round(2)) %>
+                    <% else %>
+                      --
+                    <% end %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="text-center py-5">
+                <p class="text-muted italic mb-0">No se encontraron calificaciones registradas.</p>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="text-center mt-4 text-muted small btn-print-hide">
+    <p class="mb-0">Reporte generado por <strong>CEIN</strong></p>
+  </div>
+</div>
+
+<style>
+  .bg-primary-subtle { background-color: #e0e7ff !important; }
+  .text-primary { color: #4338ca !important; }
+  
+  @media print {
+    .btn-print-hide { display: none !important; }
+    .card { border: 1px solid #dee2e6 !important; box-shadow: none !important; }
+    .bg-primary { background-color: #4338ca !important; -webkit-print-color-adjust: exact; }
+    .text-white { color: #ffffff !important; }
+  }
+</style>

@@ -1,0 +1,108 @@
+<style>
+    .form-container {
+        max-width: 650px; 
+        margin: 40px auto;
+    }
+    .card-custom {
+        border-radius: 1.25rem;
+        border: none;
+    }
+    .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+    .form-control {
+        border-radius: 0.75rem;
+        padding: 0.65rem 1rem;
+        border: 1px solid #ced4da;
+        transition: all 0.2s;
+    }
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+    .input-icon-group {
+        position: relative;
+    }
+    .error-box {
+        background-color: #fff5f5;
+        border-left: 4px solid #e53e3e;
+        border-radius: 0.75rem;
+    }
+</style>
+
+<div class="container form-container">
+    <%# Error Handling Header %>
+    <% if @representante.errors.any? %>
+      <div class="error-box p-4 mb-4 shadow-sm">
+        <h5 class="text-danger fw-bold"><%= pluralize(@representante.errors.count, "error") %> impiden guardar este registro:</h5>
+        <ul class="mb-0 small text-danger">
+          <% @representante.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="card card-custom shadow-lg p-4 p-md-5">
+        <div class="text-center mb-4">
+            <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                <span style="font-size: 1.8rem;">👨‍👩‍👧</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1"><%= tipo %></h2>
+            <p class="text-muted">Información del Representante Legal</p>
+        </div>
+
+        <%= form_with model: representante, local: true do |form| %>
+            <div class="row g-3">
+                <%# Row 1: Names %>
+                <div class="col-md-6">
+                    <%= form.label :name, "Primer Nombre", class: "form-label fw-bold text-secondary" %>
+                    <%= form.text_field :name, class: 'form-control', placeholder: 'Ej. Natasha', required: true %>
+                </div>
+                <div class="col-md-6">
+                    <%= form.label :name2, "Segundo Nombre", class: "form-label fw-bold text-secondary" %>
+                    <%= form.text_field :name2, class: 'form-control', placeholder: 'Ej. Gabriela' %>
+                </div>
+
+                <%# Row 2: Last Names %>
+                <div class="col-md-6">
+                    <%= form.label :apellido, "Primer Apellido", class: "form-label fw-bold text-secondary" %>
+                    <%= form.text_field :apellido, class: 'form-control', placeholder: 'Ej. Bucciarati', required: true %>
+                </div>
+                <div class="col-md-6">
+                    <%= form.label :apellido2, "Segundo Apellido", class: "form-label fw-bold text-secondary" %>
+                    <%= form.text_field :apellido2, class: 'form-control', placeholder: 'Ej. Rivas' %>
+                </div>
+
+                <%# Row 3: ID and Phone %>
+                <div class="col-md-6">
+                    <%= form.label :cedula, "Cédula de Identidad", class: "form-label fw-bold text-secondary" %>
+                    <%= form.text_field :cedula, class: 'form-control', placeholder: '12345678', required: true %>
+                </div>
+                <div class="col-md-6">
+                    <%= form.label :telefono, "Teléfono de Contacto", class: "form-label fw-bold text-secondary" %>
+                    <%= form.text_field :telefono, class: 'form-control', placeholder: '04241234567', required: true %>
+                </div>
+
+                <%# Row 4: Birthday %>
+                <div class="col-12">
+                    <%= form.label :birthday, "Fecha de Nacimiento", class: "form-label fw-bold text-secondary" %>
+                    <%= form.date_field :birthday, class: 'form-control', required: true %>
+                </div>
+
+                <%# Row 5: Address %>
+                <div class="col-12">
+                    <%= form.label :direccion, "Dirección de Habitación", class: "form-label fw-bold text-secondary" %>
+                    <%= form.text_area :direccion, rows: 2, class: 'form-control', placeholder: 'Calle, Sector, Edificio/Casa...', required: true %>
+                </div>
+
+                <%# Action Buttons %>
+                <div class="col-12 mt-4">
+                    <%= form.submit "Guardar Representante", class: "btn btn-primary btn-lg w-100 rounded-pill shadow-sm fw-bold mb-2" %>
+                    <%= link_to "Cancelar y Volver", representantes_path, class: "btn btn-light btn-lg w-100 rounded-pill border text-muted" %>
+                </div>
+            </div>
+        <% end %>
+    </div>
+</div>

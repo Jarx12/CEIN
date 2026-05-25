@@ -1,0 +1,88 @@
+<div class="container mt-5">
+  <%# Header con diseño limpio %>
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h6 class="text-muted text-uppercase fw-bold mb-1" style="letter-spacing: 1px; font-size: 0.8rem;">Sistema Administrativo</h6>
+      <h1 class="fw-bold text-dark mb-0">Gestión de RR.HH. 💼</h1>
+    </div>
+    <%= link_to root_path, class: "btn btn-light border rounded-pill px-4 shadow-sm fw-semibold" do %>
+       🏠 Inicio
+    <% end %>
+  </div>
+
+  <div class="text-center mb-5">
+    <h4 class="fw-semibold text-secondary">¿A qué módulo de personal desea acceder?</h4>
+    <hr class="mx-auto" style="width: 50px; height: 3px; background: #4338ca; border: none;">
+  </div>
+
+  <%# Grid de Módulos %>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    
+    <%# Módulo Docentes %>
+    <div class="col">
+      <div class="card h-100 border-0 shadow-sm rrhh-card bg-warning-subtle">
+        <div class="card-body p-4 text-center">
+          <div class="display-4 mb-3">👨‍🏫</div>
+          <h5 class="card-title fw-bold text-dark">Docentes</h5>
+          <p class="card-text text-muted small">Gestión de profesores, carga académica y perfiles docentes.</p>
+        </div>
+        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+          <%= link_to "Acceder Módulo", docentes_path, class: "btn btn-warning w-100 rounded-pill fw-bold shadow-sm" %>
+        </div>
+      </div>
+    </div>
+
+    <%# Módulo Administrativos %>
+    <div class="col">
+      <div class="card h-100 border-0 shadow-sm rrhh-card bg-primary-subtle">
+        <div class="card-body p-4 text-center">
+          <div class="display-4 mb-3">🏢</div>
+          <h5 class="card-title fw-bold text-dark">Administrativos</h5>
+          <p class="card-text text-muted small">Personal de oficina, secretaría y coordinación administrativa.</p>
+        </div>
+        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+          <%= link_to "Acceder Módulo", administrativos_path, class: "btn btn-primary w-100 rounded-pill fw-bold shadow-sm" %>
+        </div>
+      </div>
+    </div>
+
+    <%# Módulo Obreros %>
+    <div class="col">
+      <div class="card h-100 border-0 shadow-sm rrhh-card bg-danger-subtle">
+        <div class="card-body p-4 text-center">
+          <div class="display-4 mb-3">👷</div>
+          <h5 class="card-title fw-bold text-dark">Obreros</h5>
+          <p class="card-text text-muted small">Personal de mantenimiento, servicios generales y apoyo.</p>
+        </div>
+        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+          <%= link_to "Acceder Módulo", obreros_path, class: "btn btn-danger w-100 rounded-pill fw-bold shadow-sm" %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="text-center mt-5">
+    <p class="text-muted small">Seleccione un departamento para gestionar registros, cargos y nómina.</p>
+  </div>
+</div>
+
+<style>
+  .rrhh-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 1.5rem !important;
+  }
+  
+  .rrhh-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+  }
+
+  .bg-warning-subtle { background-color: #fef9c3 !important; }
+  .bg-primary-subtle { background-color: #dbeafe !important; }
+  .bg-danger-subtle { background-color: #fee2e2 !important; }
+
+  .btn-warning { background-color: #facc15; border: none; color: #854d0e; }
+  .btn-primary { background-color: #3b82f6; border: none; }
+  .btn-danger { background-color: #ef4444; border: none; }
+</style>

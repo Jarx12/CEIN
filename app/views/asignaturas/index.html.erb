@@ -1,0 +1,103 @@
+<style>
+  .text-slate { color: #475569 !important; }
+  .bg-slate-subtle { background-color: #f1f5f9 !important; color: #475569 !important; }
+  
+  /* Nuevos estilos para los Badges de Nivel y Código */
+  .bg-info-subtle { background-color: #e0f2fe !important; color: #0369a1 !important; border-color: #bae6fd !important; }
+  .bg-primary-subtle { background-color: #e0e7ff !important; color: #4338ca !important; }
+  .bg-success-subtle { background-color: #dcfce7 !important; color: #15803d !important; }
+
+  .btn-outline-primary:hover { background-color: #0d6efd; color: white; }
+  .btn-outline-warning:hover { background-color: #ffc107; color: black; }
+  .btn-outline-danger:hover { background-color: #dc3545; color: white; }
+
+  .table tr { transition: background-color 0.2s ease; }
+  code { font-family: 'Monaco', 'Consolas', monospace; font-size: 0.9rem; }
+</style>
+
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">
+        📚 Gestión de Asignaturas
+        <span class="badge bg-slate-subtle text-slate rounded-pill fs-6 align-middle ms-2">
+          <%= @asignaturas.count %> Materias
+        </span>
+      </h1>
+      <p class="text-muted mb-0">Configuración del programa académico y códigos de materia</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <%= link_to zadmin_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        ↩️ <span class="ms-1">Regresar</span>
+      <% end %>
+
+      <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        🏠 <span class="ms-1">Ir al Inicio</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Action Bar %>
+  <div class="mb-4">
+    <%= link_to new_asignatura_path, class: "btn btn-primary btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
+      ➕ <span>Registrar Nueva Asignatura</span>
+    <% end %>
+  </div>
+
+  <%# Subjects Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted" style="width: 15%;">Código</th>
+            <th class="py-3 border-0 text-muted" style="width: 45%;">Asignatura / Nivel</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @asignaturas.each do |asignatura| %>
+            <tr>
+              <td class="ps-4">
+                <%# Mostramos el código manual en lugar del ID incremental %>
+                <code class="fw-bold text-primary bg-primary-subtle px-2 py-1 rounded">
+                  <%= asignatura.codigo_asignatura.presence || "S/C" %>
+                </code>
+              </td>
+              <td>
+                <div class="fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">
+                  <%= asignatura.nombre_asignatura %>
+                </div>
+                <%# Badge para el nivel asociado %>
+                <span class="badge bg-info-subtle border border-info-subtle text-info-emphasis rounded-pill fw-medium">
+                  📍 <%= asignatura.nivel&.nombre_nivel || "Nivel no asignado" %>
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-2">
+                  <%= link_to edit_asignatura_path(asignatura), class: "btn btn-outline-warning btn-sm rounded-circle p-2", title: "Editar" do %>
+                    ✏️
+                  <% end %>
+                  <%= button_to asignatura, method: :delete, data: { turbo_confirm: "¿Está seguro de eliminar esta asignatura?" }, class: "btn btn-outline-danger btn-sm rounded-circle p-2", title: "Eliminar" do %>
+                    🗑️
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @asignaturas.empty? %>
+            <tr>
+              <td colspan="4" class="text-center py-5 text-muted fst-italic">
+                No se han definido asignaturas para el periodo actual.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,195 @@
+<style>
+    .form-container {
+        max-width: 650px;
+        margin: 40px auto;
+    }
+    .card-enrollment {
+        border-radius: 1.25rem;
+        border: none;
+        background: #ffffff;
+    }
+    .section-divider {
+        border-top: 2px dashed #e9ecef;
+        margin: 2rem 0;
+        position: relative;
+    }
+    .section-label {
+        position: absolute;
+        top: -12px;
+        left: 20px;
+        background: white;
+        padding: 0 10px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .form-control, .form-select {
+        border-radius: 0.75rem;
+        padding: 0.65rem 1rem;
+        border: 1px solid #ced4da;
+    }
+    /* Turbo Frame specific styling */
+    turbo-frame#representante_name, 
+    turbo-frame#representante_secundario_name {
+        display: block;
+        min-height: 25px;
+        transition: all 0.3s ease;
+    }
+    turbo-frame[busy] { opacity: 0.6; }
+</style>
+
+<div class="container form-container">
+    <% if @alumno.errors.any? %>
+      <div class="alert alert-danger rounded-4 shadow-sm mb-4 p-4">
+        <h5 class="fw-bold"><%= @alumno.errors.count %> errores detectados:</h5>
+        <ul class="mb-0 small">
+          <% @alumno.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="card card-enrollment shadow-lg p-4 p-md-5">
+        <div class="text-center mb-4">
+            <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                <span style="font-size: 1.8rem;">🎒</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1"><%= tipo %></h2>
+            
+            <% if AcademicPeriod.current %>
+                <div class="badge bg-success-subtle text-success rounded-pill px-3 py-2 mt-2">
+                    📅 Periodo: <%= AcademicPeriod.current.name %>
+                </div>
+            <% else %>
+                <div class="alert alert-warning py-2 mt-2 rounded-pill small">
+                    ⚠️ No hay un periodo escolar activo.
+                </div>
+            <% end %>
+        </div>
+
+        <%= form_with model: alumno, local: true do |form| %>
+            
+            <div class="row g-3">
+                <div class="col-12"><small class="text-muted fw-bold text-uppercase">Datos del Estudiante</small></div>
+                
+                <div class="col-md-6">
+                    <%= form.label :name, "Primer Nombre", class: 'form-label fw-semibold text-secondary' %>
+                    <%= form.text_field :name, class: 'form-control', placeholder: 'Socrates', required: true %>
+                </div>
+                <div class="col-md-6">
+                    <%= form.label :name2, "Segundo Nombre", class: 'form-label fw-semibold text-secondary' %>
+                    <%= form.text_field :name2, class: 'form-control', placeholder: 'Expedito' %>
+                </div>
+                <div class="col-md-6">
+                    <%= form.label :apellido, "Primer Apellido", class: 'form-label fw-semibold text-secondary' %>
+                    <%= form.text_field :apellido, class: 'form-control', placeholder: 'Hernandez', required: true %>
+                </div>
+                <div class="col-md-6">
+                    <%= form.label :apellido2, "Segundo Apellido", class: 'form-label fw-semibold text-secondary' %>
+                    <%= form.text_field :apellido2, class: 'form-control', placeholder: 'Natera' %>
+                </div>
+                <div class="col-12">
+                    <%= form.label :birthday, "Fecha de Nacimiento", class: 'form-label fw-semibold text-secondary' %>
+                    <%= form.date_field :birthday, class: 'form-control', required: true %>
+                </div>
+
+                <%# Section 2: Representatives (Vertical Layout) %>
+                <div class="col-12 mt-4">
+                    <div class="section-divider">
+                        <span class="section-label text-primary fw-bold">Responsables Legales</span>
+                    </div>
+                </div>
+
+                <%# Representante Principal %>
+                <div class="col-12 mb-3" data-controller="lookup">
+                    <%= form.label :representante_id, "Cédula del Representante Principal", class: 'form-label fw-semibold text-secondary' %>
+                    <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                        <span class="input-group-text bg-white border-0 ps-3">🔍</span>
+                        <%= form.text_field :representante_id, 
+                            class: "form-control border-0",
+                            placeholder: "Ej: 30345678",
+                            inputmode: "numeric",
+                            maxlength: 9,
+                            data: { lookup_target: "input", action: "input->lookup#filter blur->lookup#search" } %>
+                        <button class="btn btn-white border-0 text-muted" type="button" data-action="click->lookup#clear">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="mt-2 ps-2">
+                        <%= turbo_frame_tag "representante_name", data: { lookup_target: "frame" } do %>
+                            <span class="text-muted small">El sistema verificará al principal automáticamente.</span>
+                        <% end %>
+                    </div>
+                </div>
+
+                <%# Representante Secundario (Auxiliar) %>
+                <div class="col-12" data-controller="lookup">
+                    <%= form.label :representante_secundario_id, "Cédula del Representante Auxiliar (Opcional)", class: 'form-label fw-semibold text-secondary' %>
+                    <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                        <span class="input-group-text bg-white border-0 ps-3">🔍</span>
+                        <%= form.text_field :representante_secundario_id, 
+                            class: "form-control border-0",
+                            placeholder: "Ej: 12345678",
+                            inputmode: "numeric",
+                            maxlength: 9,
+                            data: { lookup_target: "input", action: "input->lookup#filter blur->lookup#search" } %>
+                        <button class="btn btn-white border-0 text-muted" type="button" data-action="click->lookup#clear">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="mt-2 ps-2">
+                        <%= turbo_frame_tag "representante_secundario_name", data: { lookup_target: "frame" } do %>
+                            <span class="text-muted small">Cédula del contacto de emergencia.</span>
+                        <% end %>
+                    </div>
+                </div>
+
+                <%# Section 3: Enrollment %>
+                <% if AcademicPeriod.current %>
+                    <div class="col-12 mt-4">
+                        <div class="section-divider">
+                            <span class="section-label text-success fw-bold">Inscripción Académica</span>
+                        </div>
+                    </div>
+                    
+                    <% current_enrollment = @alumno.enrollments.find_by(academic_period_id: AcademicPeriod.current.id) || @alumno.enrollments.build(academic_period_id: AcademicPeriod.current.id) %>
+
+                    <%= form.fields_for :enrollments, current_enrollment do |e_form| %>
+                        <%= e_form.hidden_field :id %>
+                        <%= e_form.hidden_field :academic_period_id %>
+
+                        <div class="col-12">
+                            <%= e_form.select :seccion_id, 
+    Seccion.all.map { |s| [s.nombre_seccion_con_cupo, s.id, { disabled: !s.tiene_cupo? }] }, 
+    { prompt: "Seleccione el grado correspondiente..." }, 
+    { class: "form-select form-select-lg", required: true } %>
+                        </div>
+                    <% end %>
+                <% end %>
+
+                <div class="section-divider">
+                    <span class="section-label text fw-bold">Documentos de Identidad</span>
+                </div>
+                <div class="col-12">
+                <%= form.label :acta_nacimiento, "Acta de Nacimiento (PDF o Imagen)", class: "form-label fw-bold text-secondary text-uppercase small" %>
+                <div class="input-group">
+                    <span class="input-group-text bg-light">📄</span>
+                    <%= form.file_field :acta_nacimiento, class: "form-control", accept: 'application/pdf,image/*' %>
+                </div>
+                <div class="form-text mt-1 italic-info">
+                    Cargue el documento escaneado del acta de nacimiento del alumno.
+                </div>
+                </div>
+
+                <div class="col-12 mt-5">
+                    <%= form.submit "Finalizar Registro", 
+                        class: "btn btn-success btn-lg w-100 rounded-pill shadow fw-bold py-3", 
+                        disabled: AcademicPeriod.current.nil? %>
+                    
+                    <%= link_to "Cancelar", alumnos_path, class: "btn btn-link w-100 mt-2 text-decoration-none text-muted" %>
+                </div>
+            </div>
+        <% end %>
+    </div>
+</div>

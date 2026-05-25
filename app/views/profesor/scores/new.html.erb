@@ -1,0 +1,55 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4">
+          <h5 class="mb-0 fw-bold">Nueva Calificación</h5>
+        </div>
+        
+        <div class="card-body p-4">
+          <div class="mb-4 p-3 bg-light rounded-3 border-start border-primary border-4">
+            <h6 class="fw-bold mb-1"><%= @score.enrollment.alumno.nombre_completo %></h6>
+            <p class="text-muted small mb-0">
+              <%= @seccion.nombre_seccion %> • <%= @score.asignatura&.nombre_asignatura_con_codigo || "Seleccione Asignatura" %>
+            </p>
+          </div>
+
+          <%# Agregamos data: { turbo: false } para evitar conflictos de Rails 7/8 %>
+          <%= form_with(model: [:profesor, @seccion, @score], local: true, data: { turbo: false }) do |f| %>
+            <%= f.hidden_field :enrollment_id %>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Asignatura</label>
+              <%= f.collection_select :asignatura_id, @seccion.nivel.asignaturas, :id, :nombre_asignatura_con_codigo, 
+                  { prompt: "Seleccione la materia" }, { class: "form-select rounded-pill" } %>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Lapso</label>
+                <%= f.select :lapso, [["Primer Lapso", 1], ["Segundo Lapso", 2], ["Tercer Lapso", 3]], 
+                    {}, { class: "form-select rounded-pill" } %>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Calificación</label>
+                <%= f.select :nota, 
+                    [["A (Excelente)", "A"], ["B (Bueno)", "B"], ["C (Regular)", "C"], ["D (Suficiente)", "D"], ["E (Deficiente)", "E"]], 
+                    { prompt: "Seleccione..." }, 
+                    { class: "form-select rounded-pill shadow-sm border-primary" } 
+                %>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-grid gap-2">
+              <%= f.submit "Guardar Calificación", class: "btn btn-primary btn-lg rounded-pill shadow-sm" %>
+              <%= link_to "Cancelar", profesor_seccion_path(@seccion), class: "btn btn-link text-muted" %>
+            </div>
+          <% end %> 
+        </div> 
+      </div> 
+    </div>
+  </div>
+</div>

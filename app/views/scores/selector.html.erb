@@ -1,0 +1,44 @@
+<div class="container mt-5">
+  <div class="card shadow-sm mx-auto" style="max-width: 600px; border-radius: 1rem;">
+    <div class="card-body p-4">
+      <h2 class="text-center text-primary fw-bold mb-4">
+        <%= @mode == 'masiva' ? "Carga Masiva de Notas" : "Carga Individual" %>
+      </h2>
+      
+      <%# El destino cambia según el modo %>
+      <% target_url = (@mode == 'masiva' ? bulk_edit_scores_path : new_score_path) %>
+
+      <%= form_with url: target_url, method: :get, local: true do |f| %>
+        <%= hidden_field_tag :mode, @mode %>
+
+        <%# 1. SELECTOR DE SECCIÓN %>
+        <div class="mb-4">
+          <%= f.label :seccion_id, "1. Seleccione la Sección", class: "form-label fw-bold" %>
+          <%= f.collection_select :seccion_id, Seccion.all, :id, :nombre_seccion, 
+              { selected: params[:seccion_id], prompt: "Elija una sección..." }, 
+              { 
+                class: "form-select form-select-lg", 
+                required: true,
+                onchange: "window.location.href = '#{selector_scores_path}?mode=#{@mode}&seccion_id=' + this.value" 
+              } %>
+        </div>
+
+        <%# 2. SELECTOR DE ASIGNATURA %>
+        <div class="mb-4">
+          <%= f.label :subject_id, "2. Seleccione la Asignatura", class: "form-label fw-bold" %>
+          <%# En carga individual el name suele ser :asignatura_id, en masiva :subject_id %>
+          <% select_name = (@mode == 'masiva' ? :subject_id : :subject_id) %>
+          
+          <%= f.collection_select select_name, @asignaturas, :id, :nombre_asignatura_con_codigo, 
+              { prompt: @seccion ? "Elija la materia..." : "Primero seleccione sección" }, 
+              { class: "form-select form-select-lg", required: true, disabled: @seccion.nil? } %>
+        </div>
+
+        <div class="d-grid gap-2 pt-3">
+          <%= f.submit "Continuar a Registro", class: "btn btn-primary btn-lg rounded-pill shadow", disabled: @seccion.nil? %>
+          <%= link_to "Cancelar", scores_path, class: "btn btn-outline-secondary rounded-pill" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #334155;">
+  <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 40px; text-align: center;">
+    
+    <%# Icono o Identidad %>
+    <div style="font-size: 40px; margin-bottom: 20px;">🔐</div>
+    
+    <h2 style="color: #1e293b; margin-bottom: 10px;">Restablecer Contraseña</h2>
+    
+    <p style="font-size: 16px; line-height: 1.6; color: #64748b;">
+      Has solicitado restablecer tu acceso al sistema <strong>SICEIN</strong>. 
+      Por seguridad, este enlace es de un solo uso.
+    </p>
+
+    <%# Botón de Acción %>
+    <div style="margin: 30px 0;">
+      <%= link_to "Restablecer mi Contraseña", 
+                  edit_password_url(@user.password_reset_token), 
+                  style: "background-color: #2563eb; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" %>
+    </div>
+
+    <%# Advertencia de Tiempo %>
+    <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-top: 20px; text-align: left;">
+      <p style="margin: 0; font-size: 14px; color: #92400e;">
+        <strong>Nota importante:</strong> Este enlace expirará en <strong>15 minutos</strong>. 
+        Si no solicitaste este cambio, puedes ignorar este correo de forma segura.
+      </p>
+    </div>
+
+  </div>
+
+  <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 20px;">
+    Este es un mensaje automático del Sistema SICEIN.<br>
+    &copy; <%= Time.current.year %> Puerto La Cruz, Venezuela.
+  </p>
+</div>

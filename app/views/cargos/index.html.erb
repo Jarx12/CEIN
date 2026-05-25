@@ -1,0 +1,90 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">
+        💼 Gestión de Cargos
+        <span class="badge bg-gold-subtle text-gold rounded-pill fs-6 align-middle ms-2">
+          <%= @cargos.count %> Registrados
+        </span>
+      </h1>
+      <p class="text-muted mb-0">Definición de roles para el personal administrativo y obrero</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <%= link_to zadmin_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        ↩️ <span class="ms-1">Regresar</span>
+      <% end %>
+
+      <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        🏠 <span class="ms-1">Ir al Inicio</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Action Bar %>
+  <div class="mb-4">
+    <%= link_to new_cargo_path, class: "btn btn-dark btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
+      ➕ <span>Registrar Nuevo Cargo</span>
+    <% end %>
+  </div>
+
+  <%# Job Titles Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="py-3 border-0 text-muted">Nombre del Rol / Cargo</th>
+            <th class="py-3 border-0 text-muted text-center"></th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @cargos.each do |cargo| %>
+            <tr>
+              <td>
+                <div class="fw-bold text-dark">
+                  <%= cargo.nombre_cargo %>
+                </div>
+                <small class="text-muted">Nómina General CEIN</small>
+              </td>
+              <td class="text-center">
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-2">
+                  <%= link_to edit_cargo_path(cargo), class: "btn btn-outline-warning btn-sm rounded-circle p-2", title: "Editar" do %>
+                    ✏️
+                  <% end %>
+                  <%= button_to cargo, method: :delete, data: { turbo_confirm: "¿Desea eliminar este cargo?" }, class: "btn btn-outline-danger btn-sm rounded-circle p-2", title: "Eliminar" do %>
+                    🗑️
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @cargos.empty? %>
+            <tr>
+              <td colspan="4" class="text-center py-5 text-muted fst-italic">
+                No hay cargos definidos en el sistema.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .text-gold { color: #856404 !important; }
+  .bg-gold-subtle { background-color: #fff3cd !important; color: #856404 !important; }
+  
+  .btn-dark { background-color: #212529; border-color: #212529; }
+  .btn-dark:hover { background-color: #000; border-color: #000; }
+
+  .table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.02);
+  }
+</style>

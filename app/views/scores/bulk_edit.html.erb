@@ -1,0 +1,80 @@
+<div class="container mt-4">
+  <div class="card shadow-sm p-4 border-0 rounded-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="text-primary mb-0 fw-bold"><%= @seccion.nombre_seccion %></h3>
+        <p class="text-muted mb-0">Asignatura: <strong><%= @subject.nombre_asignatura %></strong></p>
+      </div>
+      <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3">
+        📅 Periodo: <%= AcademicPeriod.current&.name %>
+      </span>
+    </div>
+    
+    <%= form_with url: bulk_update_scores_path, method: :post do |f| %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-3">Alumno</th>
+              <% [1, 2, 3].each do |num| %>
+                <th style="width: 150px;" class="text-center">Lapso <%= num %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @enrollments.each do |enrollment| %>
+              <tr>
+                <td class="ps-3">
+                  <span class="fw-bold text-dark"><%= enrollment.alumno.apellido %></span>, <%= enrollment.alumno.name %>
+                </td>
+
+                <% [1, 2, 3].each do |num_lapso| %>
+                  <%# Buscamos nota existente o inicializamos %>
+                  <% score = enrollment.scores.find_by(asignatura: @subject, lapso: num_lapso) || enrollment.scores.build(asignatura: @subject, lapso: num_lapso) %>
+                  
+                  <td class="text-center">
+                    <%= fields_for "scores[#{enrollment.id}_#{num_lapso}]", score do |s_form| %>
+                      <%= s_form.hidden_field :enrollment_id, value: enrollment.id %>
+                      <%= s_form.hidden_field :asignatura_id, value: @subject.id %>
+                      <%= s_form.hidden_field :lapso, value: num_lapso %>
+                      
+                      <%# CAMBIO: Select cualitativo en lugar de campo numérico %>
+                      <%= s_form.select :nota, 
+                          [['A', 'A'], ['B', 'B'], ['C', 'C'], ['D', 'D'], ['E', 'E']], 
+                          { 
+                            selected: (score.persisted? ? score.nota_letra : nil), 
+                            include_blank: "-" 
+                          }, 
+                          { 
+                            class: "form-select form-select-sm text-center fw-bold rounded-3 shadow-sm",
+                            style: "border-color: #dee2e6; color: #4338ca;" 
+                          } %>
+                    <% end %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4">
+        <%= f.submit "Guardar Todas las Notas", class: "btn btn-success btn-lg w-100 rounded-pill shadow-sm fw-bold" %>
+        <%= link_to "Cancelar y Volver", selector_scores_path(mode: 'masiva', seccion_id: @seccion.id), class: "btn btn-link w-100 text-muted mt-2 text-decoration-none" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  /* Efecto visual para resaltar la fila al pasar el mouse */
+  .table-hover tbody tr:hover {
+    background-color: #f8faff;
+  }
+  /* Estilizar el select para que se vea más limpio en la tabla */
+  .form-select-sm {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    cursor: pointer;
+  }
+</style>

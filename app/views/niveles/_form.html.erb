@@ -1,0 +1,13 @@
+<%= form_with(model: nivel, local: true) do |f| %>
+  <div class="card border-0 shadow p-4 rounded-4">
+    <div class="mb-4">
+      <%= f.label :nombre_nivel, "Nombre del Grado / Nivel", class: "form-label fw-bold text-secondary text-uppercase small" %>
+      <%= f.text_field :nombre_nivel, class: "form-control form-control-lg", placeholder: "Ej. 1er Grado o Pre-escolar", required: true %>
+    </div>
+    
+    <div class="d-grid gap-2">
+      <%= f.submit "Guardar Nivel", class: "btn btn-primary btn-lg rounded-pill shadow-sm fw-bold" %>
+      <%= link_to "Cancelar", niveles_path, class: "btn btn-link text-muted text-decoration-none" %>
+    </div>
+  </div>
+<% end %>

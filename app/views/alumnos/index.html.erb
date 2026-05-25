@@ -1,0 +1,91 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">
+         Gestión de Alumnos🧒
+        <span class="badge bg-primary-subtle text-primary rounded-pill fs-6 align-middle ms-2">
+          <%= @alumnos.count %> Total
+        </span>
+      </h1>
+      <p class="text-muted mb-0">Listado de estudiantes inscritos</p>
+    </div>
+    
+    <%= link_to dashboard_path_for_current_user, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm" do %>
+      🔙 <span>Regresar a mi Panel</span>
+    <% end %>
+  </div>
+
+  <%# Action Bar %>
+  <div class="mb-4">
+    <%= link_to new_alumno_path, class: "btn btn-primary btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
+      ➕ <span>Registrar Nuevo Alumno</span>
+    <% end %>
+  </div>
+
+  <%# Student Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted">Nombre Completo</th>
+            <th class="py-3 border-0 text-muted">Cédula Representante</th>
+            <th class="py-3 border-0 text-muted">Seccion Inscrita</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @alumnos.each do |alumno| %>
+            <tr>
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 0.8rem;">
+                    <%= alumno.name[0] %><%= alumno.apellido[0] %>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark"><%= alumno.name %> <%= alumno.apellido %></div>
+                    <small class="text-muted">Estudiante Activo</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border fw-normal px-2 py-1">
+                  🆔 <%= alumno.representante_id %>
+                </span>
+              </td>
+              <td>
+                  <span class="badge bg-green-subtle text-success rounded-pill px-3 py-2 border border-success-subtle">
+                    <%= alumno.seccion_actual&.nombre_seccion || "Sin Inscripción Activa" %>
+                  </span>
+              </td>
+              <td class="text-end pe-4">
+                <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                  <%= link_to alumno, class: "btn btn-white btn-sm border-end px-3 py-2", title: "Ver detalles" do %>
+                    👁️ Ver
+                  <% end %>
+                  <%= link_to edit_alumno_path(alumno), class: "btn btn-white btn-sm px-3 py-2", title: "Editar datos" do %>
+                    ✏️ Editar
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @alumnos.empty? %>
+            <tr>
+              <td colspan="3" class="text-center py-5 text-muted fst-italic">
+                No hay alumnos registrados en el sistema.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-primary-subtle { background-color: #e7f1ff; }
+  .bg-info-subtle { background-color: #e0f7fa; color: #00838f !important; }
+  .btn-white { background: white; color: #555; border: 1px solid #

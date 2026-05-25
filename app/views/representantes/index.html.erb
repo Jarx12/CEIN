@@ -1,0 +1,92 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">
+        Gestión de Representantes👨‍👩‍👧 
+        <span class="badge bg-primary-subtle text-primary rounded-pill fs-6 align-middle ms-2">
+          <%= @representantes.count %> Registrados
+        </span>
+      </h1>
+      <p class="text-muted mb-0">Lista de padres y tutores legales</p>
+    </div>
+    
+    <%= link_to dashboard_path_for_current_user, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm" do %>
+      🔙 <span>Regresar a mi Panel</span>
+    <% end %>
+  </div>
+
+  <%# Action Bar %>
+  <div class="mb-4">
+    <%= link_to new_representante_path, class: "btn btn-primary btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
+      ➕ <span>Registrar Nuevo Representante</span>
+    <% end %>
+  </div>
+
+  <%# Representative Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted">Nombre Completo</th>
+            <th class="py-3 border-0 text-muted text-center">Cédula de Identidad</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @representantes.each do |representante| %>
+            <tr>
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 0.8rem;">
+                    <%= representante.name[0] %><%= representante.apellido[0] %>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark text-capitalize">
+                      <%= representante.name %> <%= representante.apellido %>
+                    </div>
+                    <small class="text-muted">Representante Legal</small>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-light text-dark border fw-bold px-3 py-2 rounded-pill">
+                   V-<%= representante.cedula %>
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                  <%= link_to representante, class: "btn btn-white btn-sm border-end px-3 py-2", title: "Ver ficha" do %>
+                    👁️ Ver
+                  <% end %>
+                  <%= link_to edit_representante_path(representante), class: "btn btn-white btn-sm px-3 py-2", title: "Editar" do %>
+                    ✏️ Editar
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @representantes.empty? %>
+            <tr>
+              <td colspan="3" class="text-center py-5 text-muted fst-italic">
+                No hay representantes registrados actualmente.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-primary-subtle { background-color: #e7f1ff; }
+  .bg-warning-subtle { background-color: #fff3cd; color: #856404 !important; }
+  .btn-white { background: white; color: #555; border: 1px solid #dee2e6; }
+  .btn-white:hover { background: #f8f9fa; color: #0d6efd; }
+  
+  /* Smooth transitions for hover effects */
+  .table tr { transition: all 0.2s ease; }
+</style>

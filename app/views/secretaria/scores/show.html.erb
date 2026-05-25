@@ -1,0 +1,126 @@
+<div class="container mt-4">
+  <%# Navigation Header - Hidden on Print %>
+  <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+    <div class="d-flex gap-2">
+      <%= link_to secretaria_seccion_scores_path(@seccion), class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2 transition-all" do %>
+        <span>⬅️</span> <span>Regresar</span>
+      <% end %>
+      
+      <button onclick="window.print();" class="btn btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2 transition-all">
+        <span>🖨️</span> <span>Imprimir Reporte</span>
+      </button>
+    </div>
+
+    <div class="text-end">
+      <h4 class="fw-bold mb-0 text-primary">Resumen Académico</h4>
+      <span class="text-muted"><%= @alumno.nombre_completo %></span>
+    </div>
+  </div>
+
+  <%# Official Header - ONLY visible on print %>
+  <div class="d-none d-print-block text-center mb-4">
+    <h2 class="fw-bold mb-1">CENTRO DE EDUCACIÓN INICIAL (CEIN)</h2>
+    <h4 class="text-uppercase border-bottom pb-2">Reporte de Calificaciones</h4>
+    <div class="row mt-3 text-start">
+      <div class="col-6">
+        <strong>Alumno:</strong> <%= @alumno.nombre_completo %><br>
+        <strong>Sección:</strong> <%= @seccion.nombre_seccion %>
+      </div>
+      <div class="col-6 text-end">
+        <strong>Fecha:</strong> <%= Time.now.strftime("%d/%m/%Y") %><br>
+        <strong>Año Escolar:</strong> <%= Time.now.year %>-<%= Time.now.year + 1 %>
+      </div>
+    </div>
+  </div>
+
+  <%# The Table Card %>
+  <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light text-secondary">
+          <tr>
+            <th class="ps-4 py-3">Asignatura</th>
+            <th class="text-center">L1</th>
+            <th class="text-center">L2</th>
+            <th class="text-center">L3</th>
+            <th class="text-center bg-white border-start">Definitiva</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @scores.any? %>
+            <% @scores.group_by(&:asignatura).each do |asignatura, scores| %>
+              <tr>
+                <td class="ps-4">
+                  <div class="fw-bold text-dark"><%= asignatura.nombre_asignatura %></div>
+                  <div class="text-muted small"><%= asignatura.codigo_asignatura %></div>
+                </td>
+                
+                <% (1..3).each do |l| %>
+                  <% s_lapso = scores.find { |s| s.lapso == l } %>
+                  <td class="text-center">
+                    <% if s_lapso %>
+                      <%# On print, badges can sometimes look messy, so we keep the text clear %>
+                      <span class="badge rounded-pill bg-primary px-3 print-badge"><%= s_lapso.nota_letra %></span>
+                    <% else %>
+                      <span class="text-light">--</span>
+                    <% end %>
+                  </td>
+                <% end %>
+
+                <td class="text-center bg-light-subtle border-start">
+                  <% if scores.any? %>
+                    <% suma_notas = scores.map(&:nota).compact.sum %>
+                    <% prom_sobre_3 = suma_notas / 3.0 %>
+                    
+                    <div class="d-flex flex-column">
+                      <span class="fw-bold fs-5 <%= prom_sobre_3 >= 9.5 ? 'text-primary' : 'text-danger' %>">
+                        <%= Score.new(nota: prom_sobre_3.round).nota_letra %>
+                      </span>
+                      <small class="text-muted" style="font-size: 10px;">
+                        <%= prom_sobre_3.round(1) %> / 20
+                      </small>
+                    </div>
+                  <% else %>
+                    <span class="text-muted small">-</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted italic">
+                No hay registros disponibles.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Reuse your existing transitions */
+  .transition-all { transition: all 0.2s ease-in-out; }
+  .transition-all:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+  @media print {
+    /* Hide navigation */
+    .d-print-none { display: none !important; }
+    
+    /* Ensure colors appear in PDF/Print */
+    body { 
+      -webkit-print-color-adjust: exact !important; 
+      print-color-adjust: exact !important; 
+    }
+    
+    .card { border: 1px solid #dee2e6 !important; box-shadow: none !important; }
+    
+    /* Make badges look better on paper if background colors are disabled in browser */
+    .print-badge {
+      border: 1px solid #0d6efd !important;
+      color: #0d6efd !important;
+      background: transparent !important;
+    }
+  }
+</style>

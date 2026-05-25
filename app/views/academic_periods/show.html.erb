@@ -1,0 +1,124 @@
+<style>
+    .show-container {
+        max-width: 800px;
+        margin: 40px auto;
+    }
+    .period-card {
+        border-radius: 1.5rem;
+        border: none;
+        background: #fff;
+    }
+    .status-banner {
+        border-radius: 1rem 1rem 0 0;
+        padding: 1.5rem;
+        text-align: center;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+    .stat-pill {
+        background: #f8f9fa;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid #e9ecef;
+        transition: transform 0.2s;
+    }
+    .stat-pill:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<div class="container show-container">
+    <%# Action Header %>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <%= link_to academic_periods_path, class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm" do %>
+            ↩️ Volver al Listado
+        <% end %>
+        
+        <div class="d-flex gap-2">
+            <%= link_to edit_academic_period_path(@academic_period), class: "btn btn-warning rounded-pill px-4 shadow-sm" do %>
+                ✏️ Editar Configuración
+            <% end %>
+        </div>
+    </div>
+
+    <%# Main Detail Card %>
+    <div class="card period-card shadow-lg overflow-hidden">
+        <%# Status Dynamic Banner %>
+        <% if @academic_period.active? %>
+            <div class="status-banner bg-success text-white">
+                🌟 ESTE PERIODO ESTÁ ACTUALMENTE ACTIVO
+            </div>
+        <% elsif @academic_period.closed? %>
+            <div class="status-banner bg-danger text-white">
+                🔒 ESTE PERIODO HA SIDO FINALIZADO
+            </div>
+        <% else %>
+            <div class="status-banner bg-secondary text-white">
+                ⏳ PERIODO EN ESPERA / INACTIVO
+            </div>
+        <% end %>
+
+        <div class="card-body p-5">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-dark mb-2"><%= @academic_period.name %></h1>
+                <p class="text-muted lead">Identificador Oficial del Ciclo Académico</p>
+            </div>
+
+            <div class="row text-center">
+                <div class="col-md-6 mb-4">
+                    <label class="text-uppercase small fw-bold text-muted d-block mb-2">Fecha de Apertura</label>
+                    <div class="fs-4 fw-semibold text-primary">
+                        <%= l(@academic_period.start_date, format: "%d de %B, %Y") if @academic_period.start_date %>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="text-uppercase small fw-bold text-muted d-block mb-2">Fecha de Cierre</label>
+                    <div class="fs-4 fw-semibold text-primary">
+                        <%= l(@academic_period.end_date, format: "%d de %B, %Y") if @academic_period.end_date %>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 opacity-10">
+
+            <%# Quick Statistics Logic %>
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="stat-pill text-center">
+                        <div class="fs-2 mb-1">🧒</div>
+                        <div class="fw-bold fs-4"><%= @academic_period.enrollments.count %></div>
+                        <div class="small text-muted text-uppercase">Inscritos</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-pill text-center">
+                        <div class="fs-2 mb-1">🏫</div>
+                        <div class="fw-bold fs-4"><%= Seccion.count %></div>
+                        <div class="small text-muted text-uppercase">Secciones</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+        </div>
+
+        <%# Footer Contextual Actions %>
+        <div class="card-footer bg-light p-4 text-center">
+            <% if @academic_period.inactive? || @academic_period.closed? %>
+                <%= button_to activate_academic_period_path(@academic_period), 
+                              method: :patch, 
+                              class: "btn btn-success btn-lg rounded-pill px-5 shadow" do %>
+                    ▶️ Activar Periodo Académico
+                <% end %>
+            <% elsif @academic_period.active? %>
+                <p class="text-muted small mb-3">Para realizar el cierre de año, asegúrese de que todas las notas estén cargadas.</p>
+                <%= button_to close_academic_period_path(@academic_period), 
+                              method: :patch, 
+                              class: "btn btn-danger btn-lg rounded-pill px-5 shadow",
+                              data: { turbo_confirm: "¿Confirmar cierre de ciclo? Los alumnos pasarán a estatus histórico." } do %>
+                    ⏹️ Finalizar Ciclo Escolar
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+</div>

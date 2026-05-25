@@ -1,0 +1,96 @@
+<div class="container-fluid mt-4 px-4">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white py-3">
+      <%# Flexbox para distribuir los 3 elementos uniformemente %>
+      <div class="d-flex justify-content-between align-items-center">
+        
+        <%# LADO IZQUIERDO: Botón de Regreso %>
+        <div style="flex: 1;">
+          <%= link_to profesor_seccion_path(@seccion), class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm d-inline-flex align-items-center" do %>
+            <span class="me-2">⬅️</span> <span>Regresar a la Sección</span>
+          <% end %>
+        </div>
+
+        <%# CENTRO: Título de la Sección %>
+        <div class="text-center" style="flex: 2;">
+          <h4 class="fw-bold mb-0 text-primary">
+            Notas: <%= @seccion.nombre_seccion %> 
+            <span class="text-muted fw-normal fs-6 d-block d-md-inline ms-md-2">
+              (<%= @seccion.nivel.nombre_nivel %>)
+            </span>
+          </h4>
+        </div>
+
+        <%# LADO DERECHO: Selector de Lapsos %>
+        <div class="text-end" style="flex: 1;">
+          <div class="btn-group shadow-sm border rounded-pill overflow-hidden">
+            <% [1, 2, 3].each do |l| %>
+              <%= link_to "L#{l}", profesor_seccion_scores_path(@seccion, lapso: l), 
+                  class: "btn btn-sm px-3 fw-bold #{ @lapso_actual == l ? 'btn-primary' : 'btn-white text-primary' }",
+                  title: "Lapso #{l}" %>
+            <% end %>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle mb-0" style="min-width: 1000px;">
+          <thead class="table-light text-center small text-uppercase">
+            <tr>
+              <th class="text-start ps-4" style="width: 250px;">Estudiante</th>
+              <% @asignaturas.each do |asig| %>
+                <th title="<%= asig.nombre_asignatura %>">
+                  <%= asig.codigo_asignatura || asig.nombre_asignatura.truncate(10) %>
+                </th>
+              <% end %>
+              <th class="bg-primary text-white" style="width: 80px;">PROM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @enrollments.each do |enrollment| %>
+              <tr>
+                <td class="ps-4">
+                  <div class="fw-bold text-dark"><%= enrollment.alumno.nombre_completo %></div>
+                </td>
+                
+                <% sum_notas = 0 %>
+                <% count_notas = 0 %>
+
+                <% @asignaturas.each do |asig| %>
+                  <% score = enrollment.scores.find { |s| s.asignatura_id == asig.id && s.lapso == @lapso_actual.to_i } %>
+                  <td class="text-center">
+                    <% if score %>
+                      <% sum_notas += score.nota %>
+                      <% count_notas += 1 %>
+                      <span class="fw-bold <%= score.nota < 10 ? 'text-danger' : 'text-primary' %>">
+                        <%= score.nota_letra %>
+                      </span>
+                    <% else %>
+                      <span class="text-muted opacity-50">-</span>
+                    <% end %>
+                  </td>
+                <% end %>
+
+                <td class="text-center bg-primary bg-opacity-10 fw-bold">
+                  <% if count_notas > 0 %>
+                    <%= (sum_notas.to_f / count_notas).round(1) %>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="card-footer bg-light py-2 text-muted small">
+      <i class="bi bi-info-circle me-1"></i> 
+      Visualizando <strong>Lapso <%= @lapso_actual %></strong>. Para modificar calificaciones, diríjase al perfil individual del alumno o al modulo de carga masiva.
+    </div>
+  </div>
+</div>

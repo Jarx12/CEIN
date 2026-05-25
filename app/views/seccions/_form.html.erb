@@ -1,0 +1,111 @@
+<style>
+    .form-container {
+        max-width: 550px;
+        margin: 50px auto;
+    }
+    .card-section {
+        border-radius: 1.25rem;
+        border: none;
+    }
+    /* Forest Green Branding */
+    .text-success-emphasis { color: #198754 !important; }
+    .bg-green-subtle { background-color: #e8f5e9 !important; }
+    
+    .form-label {
+        font-size: 0.8rem;
+        margin-bottom: 0.4rem;
+    }
+    .form-control, .form-select {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ced4da;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
+    }
+    .error-box {
+        background-color: #fff5f5;
+        border-left: 4px solid #e53e3e;
+        border-radius: 0.75rem;
+    }
+    .italic-info { font-size: 0.85rem; font-style: italic; }
+</style>
+
+<div class="container form-container">
+    <%# Validation Feedback %>
+    <% if @seccion.errors.any? %>
+      <div class="error-box p-4 mb-4 shadow-sm">
+        <h5 class="text-danger fw-bold">⚠️ Error al guardar la sección:</h5>
+        <ul class="mb-0 small text-danger">
+          <% @seccion.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="card card-section shadow-lg p-4 p-md-5">
+        <div class="text-center mb-4">
+            <div class="bg-green-subtle text-success-emphasis rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                <span style="font-size: 1.8rem;">🏫</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1"><%= tipo %></h2>
+            <p class="text-muted">Configure los detalles del aula y asigne un nivel y docente</p>
+        </div>
+
+        <%= form_with model: @seccion, local: true do |form| %>
+            <div class="row g-3">
+                <%# Row 1: Section Name and Room Number %>
+                <div class="col-md-7">
+                    <%= form.label :nombre_seccion, "Nombre de la Sección", class: "form-label fw-bold text-secondary text-uppercase small" %>
+                    <%= form.text_field :nombre_seccion, class: 'form-control', placeholder: 'Ej. Sección A', required: true %>
+                </div>
+                <div class="col-md-5">
+                    <%= form.label :numero_salon, "Nº de Salón", class: "form-label fw-bold text-secondary text-uppercase small" %>
+                    <%= form.number_field :numero_salon, class: 'form-control', placeholder: 'Ej. 12', required: true %>
+                </div>
+
+                <%# Row 2: Nivel Educativo (Collection Select) %>
+                <div class="col-12">
+                    <%= form.label :nivel_id, "Nivel Educativo", class: "form-label fw-bold text-secondary text-uppercase small" %>
+                    <%= form.collection_select :nivel_id, Nivel.all.order(:nombre_nivel), :id, :nombre_nivel, 
+                        { prompt: 'Seleccione el grado o nivel...' }, 
+                        { class: 'form-select', required: true } %>
+                    <div class="form-text mt-1 italic-info">
+                        Esto define la escala académica (1er Grado, 2do Grado, etc.)
+                    </div>
+                </div>
+
+                <%# Row 3: Asignacion de Docente %>
+                <div class="col-12">
+                    <%= form.label :docente_id, "Docente Guía Asignado", class: "form-label fw-bold text-secondary text-uppercase small" %>
+                    
+                    <%# Cambiamos :name por :nombre_completo %>
+                    <%= form.collection_select :docente_id, Docente.all.order(:apellido), :id, :nombre_completo, 
+                        { prompt: 'Seleccione un docente para esta sección...' }, 
+                        { class: 'form-select' } %>
+                        
+                    <div class="form-text mt-2 italic-info">
+                        El docente seleccionado será el responsable principal de la sección.
+                    </div>
+                </div>
+                <div class="mb-3">
+                <%# Row 4: Capacidad Máxima de Alumnos %>
+                <%= form.label :capacidad, "Capacidad Máxima de Alumnos", class: "label-custom" %>
+                <div class="input-group">
+                    <span class="input-group-text bg-white">🧑</span>
+                    <%= form.number_field :capacidad, class: "form-control", placeholder: "Ej. 30", min: 1 %>
+                </div>
+                <div class="form-text">Cantidad de pupitres o cupos disponibles en el salón.</div>
+                </div>
+
+                <%# Action Buttons %>
+                <div class="col-12 mt-4">
+                    <%= form.submit "Guardar Sección", class: "btn btn-success btn-lg w-100 rounded-pill shadow-sm fw-bold py-3 mb-2" %>
+                    <%= link_to "Cancelar", seccions_path, class: "btn btn-link w-100 text-muted text-decoration-none fw-semibold" %>
+                </div>
+            </div>
+        <% end %>
+    </div>
+</div>

@@ -1,0 +1,70 @@
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 60px auto;
+    }
+    .card-hr {
+        border-radius: 1.25rem;
+        border: none;
+        background: #ffffff;
+    }
+    /* Gold/Charcoal Branding */
+    .text-gold { color: #856404 !important; }
+    .bg-gold-subtle { background-color: #fff3cd !important; }
+    
+    .form-control {
+        border-radius: 0.75rem;
+        padding: 0.8rem 1.2rem;
+        border: 1px solid #ced4da;
+        font-size: 1.1rem;
+    }
+    .form-control:focus {
+        border-color: #856404;
+        box-shadow: 0 0 0 0.25rem rgba(133, 100, 4, 0.1);
+    }
+    .error-box {
+        background-color: #fff5f5;
+        border-left: 4px solid #e53e3e;
+        border-radius: 0.75rem;
+    }
+</style>
+
+<div class="container form-container">
+    <%# Validation Feedback %>
+    <% if @cargo.errors.any? %>
+      <div class="error-box p-4 mb-4 shadow-sm">
+        <h6 class="text-danger fw-bold mb-2">⚠️ Error en la validación:</h6>
+        <ul class="mb-0 small text-danger">
+          <% @cargo.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="card card-hr shadow-lg p-4 p-md-5">
+        <div class="text-center mb-4">
+            <div class="bg-gold-subtle text-gold rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                <span style="font-size: 1.8rem;">💼</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1"><%= tipo %></h2>
+            <p class="text-muted small">Defina un nuevo rol para la nómina de la institución</p>
+        </div>
+
+        <%= form_with model: @cargo, local: true do |form| %>
+            <div class="mb-4">
+                <%= form.label :nombre_cargo, "Nombre del Cargo / Posición", class: "form-label fw-bold text-secondary small text-uppercase" %>
+                <%= form.text_field :nombre_cargo, 
+                    class: 'form-control', 
+                    placeholder: 'Ej. Coordinador, Secretaria, Obrero...', 
+                    required: true,
+                    autofocus: true %>
+            </div>
+
+            <div class="mt-4">
+                <%= form.submit "Guardar Cargo", class: "btn btn-dark btn-lg w-100 rounded-pill shadow-sm fw-bold mb-3 py-3" %>
+                <%= link_to "Cancelar", cargos_path, class: "btn btn-link w-100 text-decoration-none text-muted fw-semibold" %>
+            </div>
+        <% end %>
+    </div>
+</div>

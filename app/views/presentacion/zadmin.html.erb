@@ -1,0 +1,64 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">Área Administrativa⚙️ </h1>
+      <p class="text-muted mb-0">Configuración y gestión global del sistema CEIN</p>
+    </div>
+    <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm" do %>
+      🏠 <span>Ir al Inicio</span>
+    <% end %>
+  </div>
+
+  <div class="row g-4">
+    <%# Category: Gestión Académica %>
+    <div class="col-md-6">
+      <div class="card h-100 border-0 shadow-sm bg-light">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-4 text-success border-bottom pb-2">📚 Gestión Académica</h5>
+          <div class="d-grid gap-2">
+            <%= link_to attendances_path, class: "btn btn-white border text-start py-2 hover-shadow" do %>
+              ✅ Asistencias Alumnos
+            <% end if authenticated? %>
+            
+            <%= link_to scores_path, class: "btn btn-white border text-start py-2 hover-shadow" do %>
+              📝 Calificaciones
+            <% end if authenticated? %>
+            
+            <%= link_to seccions_path, class: "btn btn-white border text-start py-2 hover-shadow" do %>
+              🏫 Secciones y Aulas
+            <% end if authenticated? %>
+            
+            <%= link_to asignaturas_path, class: "btn btn-white border text-start py-2 hover-shadow" do %>
+              📖 Asignaturas / Materias
+            <% end if authenticated? %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Category: Configuración del Sistema %>
+    <div class="col-md-6">
+      <div class="card h-100 border-0 shadow-sm bg-light">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-4 text-primary border-bottom pb-2">🛠️ Gestion Institucional</h5>
+          <div class="d-grid gap-2">
+            <%= link_to academic_periods_path, class: "btn btn-white border text-start py-2 hover-shadow" do %>
+              📅 Periodos Académicos
+            <% end if authenticated? %>
+
+            <%= link_to cargos_path, class: "btn btn-white border text-start py-2 hover-shadow" do %>
+              💼 Cargos y RRHH
+            <% end if authenticated? %>
+            <%= link_to niveles_path, class: "btn btn-white border text-start py-2 hover-shadow" do %>
+              🎓 Niveles Educativos
+            <% end if authenticated? %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn-white { background: white; color: #444; transition

@@ -1,0 +1,46 @@
+<%# app/views/secretaria/seccions/seleccionar_asistencia.html.erb %>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-primary py-4 text-center text-white border-0">
+          <span style="font-size: 3rem;" class="d-block mb-2">📋</span>
+          <h4 class="fw-bold mb-0">Consultar Asistencias</h4>
+          <p class="small opacity-75 mb-0">Seleccione el grupo para visualizar el registro histórico</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <%# El formulario enviará la petición a la acción index de asistencias %>
+          <%= form_with url: "#", method: :get, local: true, id: "selector-asistencia-form" do |form| %>
+            
+            <div class="mb-4">
+              <%= form.label :seccion_id, "Sección / Aula", class: "form-label fw-bold text-secondary" %>
+              <%= form.collection_select :seccion_id, @secciones, :id, :nombre_seccion, 
+                  { prompt: "Elija una sección..." }, 
+                  { class: "form-select form-select-lg fw-semibold", required: true, id: "seccion_select" } %>
+            </div>
+
+            <div class="d-grid gap-3">
+              <%= form.submit "Ver Historial", class: "btn btn-primary btn-lg rounded-pill shadow-sm fw-bold" %>
+              <%= link_to secretaria_dashboard_path, class: "btn btn-light btn-lg rounded-pill border fw-semibold text-muted" do %>
+                ↩️ Cancelar y Volver
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Pequeño script para reescribir la URL dinámicamente antes de enviar 
+  // y que encaje con la ruta RESTful de Rails: /secretaria/seccions/:seccion_id/attendances
+  document.getElementById('selector-asistencia-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const seccionId = document.getElementById('seccion_select').value;
+    if(seccionId) {
+      window.location.href = `/secretaria/seccions/${seccionId}/attendances`;
+    }
+  });
+</script>

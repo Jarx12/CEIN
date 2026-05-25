@@ -1,0 +1,94 @@
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 60px auto;
+    }
+    .card-calendar {
+        border-radius: 1.25rem;
+        border: none;
+        background: #ffffff;
+    }
+    /* Indigo Branding for Scheduling */
+    .text-indigo { color: #4e73df !important; }
+    .bg-indigo-subtle { background-color: #f8f9fc !important; }
+    
+    .form-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05rem;
+    }
+    .form-control {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d3e2;
+    }
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.1);
+    }
+    .error-box {
+        background-color: #fff5f5;
+        border-left: 4px solid #e53e3e;
+        border-radius: 0.75rem;
+    }
+</style>
+
+<div class="container form-container">
+    <%# Validation Feedback %>
+    <% if @academic_period.errors.any? %>
+      <div class="error-box p-4 mb-4 shadow-sm">
+        <h6 class="text-danger fw-bold mb-2">⚠️ Error en el periodo:</h6>
+        <ul class="mb-0 small text-danger">
+          <% @academic_period.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="card card-calendar shadow-lg p-4 p-md-5">
+        <div class="text-center mb-4">
+            <div class="bg-indigo-subtle text-indigo rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                <span style="font-size: 1.8rem;">📅</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1"><%= tipo %></h2>
+            <p class="text-muted small">Establezca el rango de fechas para el ciclo escolar</p>
+        </div>
+
+        <%= form_with model: @academic_period, local: true do |form| %>
+            <%# Period Name %>
+            <div class="mb-4">
+                <%= form.label :name, "Nombre del Periodo", class: "form-label fw-bold text-secondary" %>
+                <%= form.text_field :name, class: 'form-control form-control-lg', placeholder: 'Ej. 2026-I', required: true %>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <%# Start Date %>
+                <div class="col-md-6">
+                    <%= form.label :start_date, "Fecha Inicio", class: "form-label fw-bold text-secondary" %>
+                    <%= form.date_field :start_date, class: 'form-control', required: true %>
+                </div>
+
+                <%# End Date %>
+                <div class="col-md-6">
+                    <%= form.label :end_date, "Fecha Fin", class: "form-label fw-bold text-secondary" %>
+                    <%= form.date_field :end_date, class: 'form-control', required: true %>
+                </div>
+            </div>
+
+            <%# Status Field (Uncomment if you want to use the enum status) %>
+            <%# <div class="mb-4">
+                <%= form.label :status, "Estado del Periodo", class: "form-label fw-bold text-secondary" %>
+                <%# <%= form.select :status, AcademicPeriod.statuses.keys.map { |s| [s.humanize, s] }, {}, { class: 'form-select rounded-pill' } %>
+            <%# </div> %>
+
+            <%# Actions %>
+            <div class="mt-5">
+                <%= form.submit "Guardar Periodo", class: "btn btn-primary btn-lg w-100 rounded-pill shadow-sm fw-bold mb-3 py-3" %>
+                
+                <%# Dynamic navigation logic %>
+                <%= link_to "Cancelar y Volver", academic_periods_path, class: "btn btn-link w-100 text-decoration-none text-muted fw-semibold" %>
+            </div>
+        <% end %>
+    </div>
+</div>

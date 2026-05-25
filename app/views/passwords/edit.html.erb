@@ -1,0 +1,59 @@
+<div class="row justify-content-center" style="margin-top: 80px;">
+  <div class="col-md-5 col-lg-4">
+    
+    <div class="card border-0 shadow-lg rounded-4">
+      <div class="card-body p-5">
+        
+        <%# Encabezado de Seguridad %>
+        <div class="text-center mb-4">
+          <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+            <i class="bi bi-shield-lock-fill text-primary" style="font-size: 2rem;"></i>
+          </div>
+          <h2 class="fw-bold text-dark">Nueva Contraseña</h2>
+          <p class="text-muted small">Asegúrese de elegir una clave segura que no use en otros sitios.</p>
+        </div>
+
+        <hr class="my-4 text-secondary opacity-25">
+
+        <%= form_with url: password_path(params[:token]), method: :put, class: "needs-validation" do |form| %>
+          
+          <%# Nueva Contraseña %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary small">Nueva Contraseña</label>
+            <%= form.password_field :password, 
+                required: true, 
+                autocomplete: "new-password", 
+                placeholder: "Mínimo 8 caracteres", 
+                maxlength: 72,
+                class: "form-control form-control-lg border-2 bg-light rounded-3" %>
+          </div>
+
+          <%# Confirmación %>
+          <div class="mb-4">
+            <label class="form-label fw-semibold text-secondary small">Confirmar Contraseña</label>
+            <%= form.password_field :password_confirmation, 
+                required: true, 
+                autocomplete: "new-password", 
+                placeholder: "Repita su nueva contraseña", 
+                maxlength: 72,
+                class: "form-control form-control-lg border-2 bg-light rounded-3" %>
+          </div>
+
+          <%# Botón de Guardar %>
+          <div class="d-grid shadow-sm">
+            <%= form.submit "Guardar Cambios", class: "btn btn-primary btn-lg fw-bold rounded-3 py-3" %>
+          </div>
+
+        <% end %>
+
+      </div>
+    </div>
+
+    <%# Recomendación de Seguridad %>
+    <div class="alert alert-info mt-4 border-0 rounded-4 shadow-sm" style="font-size: 0.85rem;">
+      <i class="bi bi-info-circle-fill me-2"></i> 
+      Una contraseña fuerte incluye letras, números y símbolos.
+    </div>
+
+  </div>
+</div>

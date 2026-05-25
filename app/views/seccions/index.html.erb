@@ -1,0 +1,144 @@
+<style>
+    .section-card {
+        border-radius: 1.25rem;
+        border: none;
+        background-color: #fff;
+    }
+    .text-success-emphasis { color: #0a5131 !important; }
+    .bg-green-subtle { background-color: #d1e7dd !important; color: #0a5131 !important; }
+    
+    .table-sections thead {
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05rem;
+    }
+    .room-badge {
+        font-family: 'Monaco', monospace;
+        background-color: #f1f3f5;
+        color: #495057;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+    }
+    .btn-delete-custom {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+    }
+</style>
+
+<div class="container mt-4">
+    <%# Header Section %>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-success-emphasis mb-0">🏫 Gestión de Secciones</h1>
+            <p class="text-muted mb-0">Organización de aulas, niveles educativos y asignación de docentes</p>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm" do %>
+                🏠 Inicio
+            <% end %>
+            <%= link_to new_seccion_path, class: "btn btn-success rounded-pill px-4 shadow-sm fw-bold" do %>
+                ➕ Nueva Sección
+            <% end %>
+        </div>
+    </div>
+
+    <%# Main Content Card %>
+    <div class="card section-card shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 table-sections">
+                <thead class="bg-light border-bottom">
+                    <tr>
+                        <th class="ps-4 py-3 border-0 text-muted">Nombre / Sección</th>
+                        <th class="py-3 border-0 text-muted text-center">Aula</th>
+                        <th class="py-3 border-0 text-muted">Nivel Educativo</th>
+                        <th class="py-3 border-0 text-muted">Docente Guía</th>
+                        <th class="pe-4 py-3 border-0 text-muted text-end">Capacidad</th>
+                        <th class="pe-4 py-3 border-0 text-muted text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @seccions.each do |seccion| %>
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark fs-5"><%= seccion.nombre_seccion %></div>
+                                <small class="text-muted text-uppercase small">ID: #<%= seccion.id.to_s.rjust(3, '0') %></small>
+                            </td>
+                            <td class="text-center">
+                                <span class="room-badge">
+                                    🚪 <%= seccion.numero_salon.presence || "N/A" %>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-green-subtle rounded-pill px-3 py-2 border border-success-subtle">
+                                    <%= seccion.nivel&.nombre_nivel || "Sin Nivel" %>
+                                </span>
+                            </td>
+                            <td>
+                                <% if seccion.docente %>
+                                    <div class="d-flex align-items-center">
+                                        <div class="text-dark fw-semibold">
+                                            <%= seccion.docente.name %> <%= seccion.docente.apellido %>
+                                        </div>
+                                    </div>
+                                <% else %>
+                                    <span class="text-danger small fst-italic">
+                                        ⚠️ Sin docente asignado
+                                    </span>
+                                <% end %>
+                            </td>
+                            <td>
+                            <% inscritos_actuales = seccion.enrollments.where(academic_period: AcademicPeriod.current).count %>
+                            <% porcentaje = (inscritos_actuales.to_f / seccion.capacidad * 100).round %>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="progress flex-grow-1" style="height: 8px; width: 80px;">
+                                <div class="progress-bar <%= porcentaje >= 90 ? 'bg-danger' : 'bg-success' %>" 
+                                    role="progressbar" style="width: <%= porcentaje %>%"></div>
+                                </div>
+                                <small class="fw-bold <%= porcentaje >= 100 ? 'text-danger' : 'text-muted' %>">
+                                <%= inscritos_actuales %> / <%= seccion.capacidad %>
+                                </small>
+                            </div>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <div class="d-flex justify-content-end align-items-center gap-1">
+                                    <%= link_to seccion_path(seccion), class: "btn btn-primary btn-sm rounded-pill px-3 shadow-sm me-1", title: "Ver Alumnos" do %>
+                                        🧒 Ver Alumnos
+                                    <% end %>
+                                    
+                                    <%= link_to edit_seccion_path(seccion), class: "btn btn-outline-warning btn-sm rounded-circle p-0 btn-delete-custom", title: "Editar" do %>
+                                        ✏️
+                                    <% end %>
+
+                                    <%= button_to seccion_path(seccion), 
+                                        method: :delete, 
+                                        data: { turbo_confirm: "¿Está seguro de eliminar esta sección?" }, 
+                                        class: "btn btn-outline-danger btn-sm rounded-circle p-0 btn-delete-custom", 
+                                        title: "Eliminar" do %>
+                                        🗑️
+                                    <% end %>
+                                </div>
+                            </td>
+                        </tr>
+                    <% end %>
+
+                    <% if @seccions.empty? %>
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="py-4">
+                                    <p class="text-muted mb-0 fs-5">No hay secciones registradas actualmente.</p>
+                                    <small class="text-muted">Presione "Nueva Sección" para comenzar.</small>
+                                </div>
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

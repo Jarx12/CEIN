@@ -1,0 +1,151 @@
+<style>
+    .profile-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
+    .profile-card {
+        border-radius: 1.5rem;
+        border: none;
+        background: #fff;
+        overflow: hidden;
+    }
+    .profile-header {
+        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+        padding: 3rem 2rem;
+        color: white;
+    }
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: white;
+        color: #0d6efd;
+        border-radius: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 1rem;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    .info-group {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #f0f2f5;
+    }
+    .info-group:last-child { border-bottom: none; }
+    
+    .label-caps {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #94a3b8;
+        letter-spacing: 1px;
+        margin-bottom: 0.3rem;
+        display: block;
+    }
+    .value-text {
+        font-size: 1.05rem;
+        color: #1e293b;
+        font-weight: 600;
+    }
+    .student-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    .student-link:hover {
+        background: #f1f5f9;
+        transform: translateX(5px);
+    }
+</style>
+
+<div class="container profile-container">
+    <div class="profile-card shadow-lg">
+        <div class="profile-header text-center">
+            <div class="profile-avatar">👨‍👩‍👧</div>
+            <h2 class="fw-bold mb-1">
+                <%= "#{@representante.name} #{@representante.apellido}" %>
+            </h2>
+            <div class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mt-2">
+                ID: <%= @representante.cedula %>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <div class="col-6 info-group border-end">
+                    <span class="label-caps">Nombres</span>
+                    <div class="value-text"><%= "#{@representante.name} #{@representante.name2}".strip %></div>
+                </div>
+                <div class="col-6 info-group">
+                    <span class="label-caps">Apellidos</span>
+                    <div class="value-text"><%= "#{@representante.apellido} #{@representante.apellido2}".strip %></div>
+                </div>
+            </div>
+
+            <div class="row g-0">
+                <div class="col-md-6 info-group border-end">
+                    <span class="label-caps">Teléfono</span>
+                    <div class="value-text">
+                        <i class="bi bi-telephone me-1 text-primary"></i>
+                        <%= @representante.telefono.presence || "No registrado" %>
+                    </div>
+                </div>
+                <div class="col-md-6 info-group">
+                    <span class="label-caps">Fecha de Nacimiento</span>
+                    <div class="value-text"><%= @representante.birthday&.strftime("%d/%m/%Y") || "---" %></div>
+                </div>
+            </div>
+
+            <div class="info-group">
+                <span class="label-caps">Dirección de Habitación</span>
+                <div class="value-text"><%= @representante.direccion.presence || "Sin dirección registrada" %></div>
+            </div>
+
+            <div class="info-group bg-light-subtle">
+        <div class="info-group bg-light-subtle">
+            <span class="label-caps mb-3">Estudiantes a Cargo</span>
+            
+            <%# Search by cedula%>
+            <% students = Alumno.where("representante_id = ? OR representante_secundario_id = ?", @representante.cedula.to_s, @representante.cedula.to_s) %>
+            
+            <% if students.any? %>
+                <% students.each do |estudiante| %>
+                    <div class="student-link border shadow-sm mb-2 d-flex align-items-center bg-white p-3 rounded-3">
+                        <span class="me-3 fs-4">🧒</span>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold text-dark"><%= "#{estudiante.name} #{estudiante.apellido}" %></div>
+                            <div class="text-muted small">
+                                <%= estudiante.seccion_actual&.nombre_seccion || "Sin Sección" %> 
+                                <% if estudiante.birthday %>
+                                    • <%= ((Time.zone.now - estudiante.birthday.to_time) / 1.year.seconds).floor %> años
+                                <% end %>
+                            </div>
+                        </div>
+                    </div>
+                <% end %>
+            <% else %>
+                <div class="text-center p-3 border border-dashed rounded-3">
+                    <p class="text-muted small mb-0 italic">No hay estudiantes asociados a la Cédula <%= @representante.cedula %>.</p>
+                </div>
+            <% end %>
+        </div>
+
+        <div class="p-4 bg-white d-grid gap-2">
+            <div class="row g-2">
+                <div class="col-6">
+                    <%= link_to "Regresar", representantes_path, class: "btn btn-outline-secondary w-100 rounded-pill fw-bold" %>
+                </div>
+                <div class="col-6">
+                    <%= link_to "Editar Datos", edit_representante_path(@representante), class: "btn btn-primary w-100 rounded-pill fw-bold" %>
+                </div>
+            </div>
+            <%= button_to "Eliminar Representante", @representante, method: :delete, data: { turbo_confirm: "¿Está seguro? Esto podría afectar a los alumnos asociados." }, class: "btn btn-link text-danger text-decoration-none small mt-2" %>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,105 @@
+<style>
+  .text-gold { color: #856404 !important; }
+  .bg-gold-subtle { background-color: #fff3cd !important; color: #856404 !important; }
+  
+  .btn-dark { background-color: #212529; border-color: #212529; }
+  .btn-dark:hover { background-color: #000; border-color: #000; }
+
+  .table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.02);
+  }
+
+  /* Asegura que los botones circulares mantengan su forma */
+  .btn-circle-sm {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+</style>
+
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">
+        🎓 Gestión de Niveles
+        <span class="badge bg-gold-subtle text-gold rounded-pill fs-6 align-middle ms-2">
+          <%= @niveles.count %> Registrados
+        </span>
+      </h1>
+      <p class="text-muted mb-0">Definición de grados académicos y escalas educativas para el CEIN</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <%= link_to zadmin_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        ↩️ <span class="ms-1">Regresar</span>
+      <% end %>
+
+      <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        🏠 <span class="ms-1">Ir al Inicio</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Action Bar %>
+  <div class="mb-4">
+    <%= link_to new_nivel_path, class: "btn btn-dark btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
+      ➕ <span>Registrar Nuevo Nivel</span>
+    <% end %>
+  </div>
+
+  <%# Levels Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="py-3 border-0 text-muted">Nombre del Nivel / Grado</th>
+            <th class="py-3 border-0 text-muted text-center">Secciones Vinculadas</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @niveles.each do |nivel| %>
+            <tr>
+              <td>
+                <div class="fw-bold text-dark">
+                  <%= nivel.nombre_nivel %>
+                </div>
+                <small class="text-muted">Escala Académica CEIN</small>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-light text-dark border rounded-pill px-3">
+                  <%= nivel.seccions.count %> secciones
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-2">
+                  <%= link_to edit_nivel_path(nivel), class: "btn btn-outline-warning btn-sm rounded-circle btn-circle-sm", title: "Editar" do %>
+                    ✏️
+                  <% end %>
+                  <%= button_to nivel_path(nivel), method: :delete, 
+                      data: { turbo_confirm: "¿Desea eliminar este nivel educativo? Esto podría afectar la organización de las secciones." }, 
+                      class: "btn btn-outline-danger btn-sm rounded-circle btn-circle-sm", title: "Eliminar" do %>
+                    🗑️
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @niveles.empty? %>
+            <tr>
+              <td colspan="4" class="text-center py-5 text-muted fst-italic">
+                No hay niveles educativos definidos en el sistema.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+<div class="container mt-4 mb-5">
+  <%# Header con Contexto mejorado %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-0">Toma de Asistencia</h2>  
+        <h2 class="fw-bold text-dark mb-0">Seccion: <%= @seccion.nombre_seccion %> (<%= @seccion.nivel.nombre_nivel %>)</h2>
+        <p class="text-muted"><%= l(@fecha, format: :long) %></p>
+    </div>
+  </div>
+
+  <%# URL actualizada a la acción guardar del profesor %>
+  <%= form_with url: guardar_profesor_seccion_attendances_path(@seccion), method: :post, local: true do %>
+    <%= hidden_field_tag :fecha, @fecha %>
+    
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+      <div class="list-group list-group-flush">
+        <% @enrollments.each do |enrollment| %>
+          <%# Buscamos el registro usando el alumno del enrollment %>
+          <% attendance_record = enrollment.alumno.attendances.find_by(fecha: @fecha) %>
+          <% is_present = attendance_record&.presente %>
+          <% alumno = enrollment.alumno %>
+          
+          <label class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center cursor-pointer" for="attendance_<%= alumno.id %>">
+            <div>
+              <div class="fw-bold fs-5 text-dark"><%= alumno.nombre_completo %></div>
+              <div id="status_label_<%= alumno.id %>" class="small <%= is_present ? 'text-success' : 'text-danger' %> fw-semibold">
+                <%= is_present ? "✅ Confirmado Presente" : "❌ Marcado como Ausente" %>
+              </div>
+            </div>
+
+            <div class="form-check form-switch me-2">
+              <%# Cambiamos "Attendance" por "asistencia" para que coincida con tu nuevo controlador %>
+              <%= check_box_tag "asistencia[#{alumno.id}]", "true", is_present, 
+                  class: "form-check-input attendance-toggle", 
+                  id: "attendance_#{alumno.id}",
+                  style: "width: 3.5rem; height: 1.75rem; cursor: pointer;",
+                  onchange: "updateStatusLabel(this, #{alumno.id})" %>
+            </div>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Floating Action Buttons %>
+    <div class="sticky-bottom bg-white p-3 border-top shadow-lg rounded-top-4 mx-n3">
+      <div class="container">
+        <div class="row g-2">
+          <div class="col-8">
+            <%= submit_tag "Guardar Asistencia", class: "btn btn-success btn-lg w-100 rounded-pill fw-bold shadow" %>
+          </div>
+          <div class="col-4">
+            <%= link_to "Cancelar", profesor_seccion_path(@seccion), class: "btn btn-light btn-lg w-100 rounded-pill border" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  function updateStatusLabel(checkbox, alumnoId) {
+    const label = document.getElementById(`status_label_${alumnoId}`);
+    if (checkbox.checked) {
+      label.innerHTML = "✅ Confirmado Presente";
+      label.classList.replace('text-danger', 'text-success');
+    } else {
+      label.innerHTML = "❌ Marcado como Ausente";
+      label.classList.replace('text-success', 'text-danger');
+    }
+  }
+</script>
+
+<style>
+  .cursor-pointer { cursor: pointer; }
+  .list-group-item-action:active { background-color: #f8f9fa; }
+
+  .sticky-bottom {
+    position: sticky;
+    bottom: 0;
+    z-index: 1020;
+    /* Ajuste para que no tape el contenido final */
+    margin-top: 2rem; 
+  }
+
+  /* Mejora visual para el switch cuando está activo */
+  .form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+  }
+</style>

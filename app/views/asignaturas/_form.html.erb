@@ -1,0 +1,90 @@
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 60px auto;
+    }
+    .card-academic {
+        border-radius: 1.25rem;
+        border: none;
+    }
+    /* Slate theme for Curriculum items */
+    .text-slate { color: #475569 !important; }
+    .bg-slate-subtle { background-color: #f1f5f9 !important; }
+    
+    .form-control {
+        border-radius: 0.75rem;
+        padding: 0.8rem 1.2rem;
+        border: 1px solid #ced4da;
+        font-size: 1.1rem;
+    }
+    .form-control:focus {
+        border-color: #475569;
+        box-shadow: 0 0 0 0.25rem rgba(71, 85, 105, 0.1);
+    }
+    .error-box {
+        background-color: #fff5f5;
+        border-left: 4px solid #e53e3e;
+        border-radius: 0.75rem;
+    }
+</style>
+
+<div class="container form-container">
+    <%# Error Feedback %>
+    <% if @asignatura.errors.any? %>
+      <div class="error-box p-4 mb-4 shadow-sm">
+        <h6 class="text-danger fw-bold mb-2">No se pudo guardar la asignatura:</h6>
+        <ul class="mb-0 small text-danger">
+          <% @asignatura.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+<div class="card card-academic shadow-lg p-4 p-md-5">
+        <div class="text-center mb-4">
+            <div class="bg-slate-subtle text-slate rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                <span style="font-size: 1.8rem;">📚</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1"><%= tipo %></h2>
+            <p class="text-muted">Defina los detalles de la materia</p>
+        </div>
+
+        <%= form_with model: @asignatura, local: true do |form| %>
+            
+            <%# Nuevo Campo: Código Único %>
+            <div class="mb-4">
+                <%= form.label :codigo_asignatura, "Código de Asignatura", class: "form-label fw-bold text-secondary small text-uppercase" %>
+                <%= form.text_field :codigo_asignatura, 
+                    class: 'form-control', 
+                    placeholder: 'Ej. MAT-101, BIO-01...', 
+                    required: true %>
+            </div>
+
+            <%# Campo Existente: Nombre %>
+            <div class="mb-4">
+                <%= form.label :nombre_asignatura, "Nombre de la Asignatura", class: "form-label fw-bold text-secondary small text-uppercase" %>
+                <%= form.text_field :nombre_asignatura, 
+                    class: 'form-control', 
+                    placeholder: 'Ej. Matemáticas, Química...', 
+                    required: true %>
+            </div>
+
+            <%# Nuevo Campo: Selección de Nivel %>
+            <div class="mb-4">
+                <%= form.label :nivel_id, "Nivel Educativo", class: "form-label fw-bold text-secondary small text-uppercase" %>
+                <%= form.collection_select :nivel_id, Nivel.all, :id, :nombre_nivel, 
+                    { prompt: "Seleccione un nivel" }, 
+                    { class: "form-select form-control", required: true } %>
+            </div>
+
+            <%# Action Buttons %>
+            <div class="mt-4">
+                <%= form.submit "Guardar Cambios", class: "btn btn-primary btn-lg w-100 rounded-pill shadow-sm fw-bold mb-3 py-3" %>
+                
+                <%# Smart Cancel Link %>
+                <%= link_to "Cancelar", asignaturas_path, class: "btn btn-link w-100 text-decoration-none text-muted fw-semibold" %>
+            </div>
+        <% end %>
+    </div>
+</div>

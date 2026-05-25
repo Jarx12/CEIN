@@ -1,0 +1,83 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+    
+    <%# Left side: Button Group %>
+    <div class="d-flex gap-2">
+      <%= link_to profesor_seccion_attendances_path(@seccion), class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2 transition-all" do %>
+        <span>↩️</span> Regresar
+      <% end %>
+
+      <button onclick="window.print();" class="btn btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2 transition-all">
+        <span>🖨️</span> <span>Imprimir</span>
+      </button>
+    </div>
+
+    <%# Right side: Title %>
+    <div class="text-end">
+      <h1 class="fw-bold text-dark mb-0">Reporte de Asistencia 📄</h1>
+      <p class="text-muted mb-0"> 
+        Sección: <%= @seccion.nombre_seccion %> (<%= @seccion.nivel.nombre_nivel %>) • <%= l(@fecha, format: :long) %>
+      </p>
+    </div>
+    
+  </div>
+
+  <%# Official Header - ONLY visible on print %>
+  <div class="d-none d-print-block text-center mb-4">
+    <h2 class="fw-bold mb-1">CENTRO DE EDUCACIÓN INICIAL (CEIN)</h2>
+    <h4 class="text-uppercase border-bottom pb-2">Asistencia: <%= @seccion.nombre_seccion %></h4>
+    <p class="small text-muted">Fecha del Reporte: <%= l(@fecha, format: :long) %> | Impreso: <%= Time.now.strftime("%d/%m/%Y %H:%M") %></p>
+  </div>
+
+  <%# The Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted" style="width: 70%;">Alumno</th>
+            <th class="py-3 border-0 text-muted text-center" style="width: 30%;">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @attendances.each do |attendance| %>
+            <tr>
+              <td class="ps-4 fw-semibold">
+                <%= attendance.alumno.nombre_completo %>
+              </td>
+              <td class="text-center">
+                <span class="<%= attendance.presente ? 'text-success' : 'text-danger' %> fw-bold">
+                  <%= attendance.presente ? "Presente ✅" : "Ausente ❌" %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-primary-subtle { background-color: #e7f1ff; }
+  .btn-white { background: white; color: #444; }
+  .btn-white:hover { background: #f8f9fa; color: #0d6efd; border-color: #0d6efd !important; }
+  
+  /* Smooth hover effect for buttons */
+  .transition-all { 
+    transition: all 0.2s ease-in-out; 
+  }
+  .transition-all:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+
+  @media print {
+    .d-print-none { display: none !important; }
+    body { color: black !important; background: white !important; }
+    .container { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    .card { border: none !important; box-shadow: none !important; }
+    .table { width: 100% !important; }
+  }
+</style>

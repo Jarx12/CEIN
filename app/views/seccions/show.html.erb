@@ -1,0 +1,120 @@
+<style>
+    .roster-container {
+        max-width: 1000px;
+        margin: 40px auto;
+    }
+    .roster-card {
+        border-radius: 1.25rem;
+        border: none;
+        background-color: #fff;
+    }
+    .table-roster thead {
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05rem;
+        color: #6c757d;
+    }
+    .student-name {
+        font-weight: 600;
+        color: #2d3748;
+    }
+    .badge-enrollment {
+        background-color: #e3f2fd;
+        color: #0d47a1;
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+    /* Simple avatar circle for a cleaner look */
+    .avatar-placeholder {
+        width: 38px;
+        height: 38px;
+        background-color: #edf2f7;
+        color: #4a5568;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container roster-container">
+    <%# Header Section %>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-dark mb-1">
+                Sección <%= @seccion.nombre_seccion %>
+            </h1>
+            <p class="text-muted mb-0">Listado de Estudiantes Inscritos</p>
+        </div>
+        <div class="text-end">
+            <span class="badge-enrollment shadow-sm">
+                Total: <%= @seccion.enrollments.where(academic_period: AcademicPeriod.current).count %> alumnos
+            </span>
+        </div>
+    </div>
+
+    <%# Main Roster Card %>
+    <div class="card roster-card shadow-lg overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 table-roster">
+                <thead>
+                    <tr>
+                        <th class="ps-4 py-3">Estudiante</th>
+                        <th class="py-3">Cédula Representante</th>
+                        <th class="py-3">Fecha de Nacimiento</th>
+                        <th class="py-3 text-center">Estatus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% current_period_id = AcademicPeriod.current&.id %>
+                    <% @seccion.alumnos.includes(:enrollments).joins(:enrollments).where(enrollments: { academic_period_id: current_period_id }).distinct.each do |alumno| %>
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-placeholder me-3">
+                                        <%= alumno.name[0] %><%= alumno.apellido[0] %>
+                                    </div>
+                                    <div>
+                                        <div class="student-name">
+                                            <%= alumno.name %> <%= alumno.name2 %>
+                                        </div>
+                                        <div class="text-muted small">
+                                            <%= alumno.apellido %> <%= alumno.apellido2 %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-secondary font-monospace"><%= alumno.representante_id %></span>
+                            </td>
+                            <td>
+                                <%= alumno.birthday.strftime("%d/%m/%Y") if alumno.birthday %>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill bg-success px-3">Activo</span>
+                            </td>
+                        </tr>
+                    <% end %>
+                    <% if @seccion.enrollments.where(academic_period_id: current_period_id).none? %>
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted fst-italic">
+                                No hay alumnos registrados para este periodo académico.
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%# Footer / Navigation %>
+    <div class="mt-4">
+        <%= link_to seccions_path, class: "btn btn-outline-secondary btn-lg rounded-pill px-5 shadow-sm" do %>
+            ↩️ Regresar al Listado de Secciones
+        <% end %>
+    </div>
+</div>

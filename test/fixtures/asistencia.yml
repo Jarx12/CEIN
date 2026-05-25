@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  alumno: one
+  fecha: 2025-09-15
+  presente: false
+
+two:
+  alumno: two
+  fecha: 2025-09-15
+  presente: false

@@ -1,0 +1,82 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">Control de Asistencias📋</h1>
+      <p class="text-muted mb-0">Historial de presencia escolar</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+      <%= link_to zadmin_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        ↩️ <span class="ms-1">Regresar</span>
+      <% end %>
+
+      <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        🏠 <span class="ms-1">Ir al Inicio</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Primary Action Button %>
+  <div class="mb-4">
+    <%= link_to seleccionar_seccion_attendances_path, class: "btn btn-primary btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
+      ➕ <span>Registrar Asistencia de hoy</span>
+    <% end %>
+  </div>
+
+  <%# History Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted" style="width: 70%;">Fecha del Registro</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @fechas.each do |attendance| %>
+            <% if attendance.fecha.present? %>
+              <tr>
+                <td class="ps-4">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                      📅
+                    </div>
+                    <div>
+                      <%# Using the Spanish localization we set up %>
+                      <div class="fw-bold text-dark">
+                        <%= l(attendance.fecha, format: :long) %>
+                      </div>
+                      <small class="text-muted"><%= attendance.fecha.strftime("%d/%m/%Y") %></small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-end pe-4">
+                  <%= link_to attendance_path(attendance.fecha), class: "btn btn-white border rounded-pill px-4 hover-shadow transition-all" do %>
+                    👁️ Ver Detalle
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+
+          <% if @fechas.empty? %>
+            <tr>
+              <td colspan="2" class="text-center py-5 text-muted">
+                <p class="mb-0">No se han encontrado registros de asistencia aún.</p>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-primary-subtle { background-color: #e7f1ff; }
+  .btn-white { background: white; color: #444; }
+  .btn-white:hover { background: #f8f9fa; color: #0d6efd; border-color: #0d6efd !important; }
+  .transition-all { transition: all 0.2s ease-in-out; }
+</style>
