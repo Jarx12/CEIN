@@ -1,0 +1,41 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-indigo py-4 text-center text-white border-0" style="background-color: #6610f2;">
+          <span style="font-size: 3rem;" class="d-block mb-2">🕵️‍♀️</span>
+          <h4 class="fw-bold mb-0">Supervisión de Calificaciones</h4>
+          <p class="small opacity-75 mb-0">Seleccione el grupo para auditar el rendimiento académico</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <%= form_with url: "#", method: :get, local: true, id: "coordinadora-selector-notas-form" do |form| %>
+            <div class="mb-4">
+              <%= form.label :seccion_id, "Sección / Aula", class: "form-label fw-bold text-secondary" %>
+              <%= form.collection_select :seccion_id, @secciones, :id, :nombre_seccion, 
+                  { prompt: "Elija una sección..." }, 
+                  { class: "form-select form-select-lg fw-semibold", required: true, id: "coordinadora_seccion_notas_select" } %>
+            </div>
+
+            <div class="d-grid gap-3">
+              <%= form.submit "Auditar Notas", class: "btn btn-indigo btn-lg rounded-pill shadow-sm fw-bold text-white", style: "background-color: #6610f2;" %>
+              <%= link_to coordinadora_dashboard_path, class: "btn btn-light btn-lg rounded-pill border fw-semibold text-muted" do %>
+                ↩️ Volver al Panel
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('coordinadora-selector-notas-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const seccionId = document.getElementById('coordinadora_seccion_notas_select').value;
+    if(seccionId) {
+      window.location.href = `/coordinadora/seccions/${seccionId}/scores`;
+    }
+  });
+</script>

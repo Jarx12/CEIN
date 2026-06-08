@@ -95,7 +95,7 @@
                 <li><%= link_to "👨‍🏫 Mi Panel", profesor_dashboard_path, class: "nav-link" %></li>
               <% end %>
 
-              <% if current_user&.directora? || current_user&.admin? %>
+              <% if current_user&.directora? || current_user&.coordinadora? ||  current_user&.admin? %>
                 <li><%= link_to "⚙️ Admin", zadmin_path, class: "nav-link" %></li>
               <% end %>
             </ul>

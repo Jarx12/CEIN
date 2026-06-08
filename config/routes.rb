@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get "/rrhh", to: "presentacion#rrhh", as: "rrhh"
   get "/zadmin", to: "presentacion#zadmin", as: "zadmin"
 
-  # 3.1 Área del Profesor
+  # 3.1 Área de los docentes
   namespace :profesor do
     resource :dashboard, only: [:show]
     resources :seccions, only: [:show] do
@@ -44,10 +44,21 @@ Rails.application.routes.draw do
   end
 end
 
-
+  # 3.3 Área de la Coordinacion
+  namespace :coordinadora do
+    get 'dashboard', to: 'dashboards#show', as: :dashboard
+    resources :seccions, only: [:index] do
+    collection do
+      get :seleccionar_asistencia
+      get :seleccionar_notas
+    end
+    
+    resources :attendances, only: [:index, :show]
+    resources :scores, only: [:index, :show]
+  end
+end
 
   # 4. Otros Dashboards de Rol
-  get 'coordinadora/dashboard', to: 'coordinadora/dashboards#show', as: :coordinadora_dashboard
   get 'admin/dashboard', to: 'admin/dashboards#show', as: :admin_dashboard
 
   # 5. Recursos Administrativos (CRUD)

@@ -16,7 +16,7 @@ class User < ApplicationRecord
   validates :email_address, presence: true, uniqueness: true
 
   def superuser?
-    self.role == "admin" # O la columna que uses para marcar al admin
+    self.role == "admin"
   end
   def display_name
     return "Administrador" if superuser?

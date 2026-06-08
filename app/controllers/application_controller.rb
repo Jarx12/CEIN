@@ -9,7 +9,9 @@ class ApplicationController < ActionController::Base
   helper_method def dashboard_path_for_current_user
     return root_path unless authenticated?
 
-    if current_user.secretaria?
+    if current_user.profesor?
+      profesor_dashboard_path
+    elsif current_user.secretaria?
       secretaria_dashboard_path
     elsif current_user.coordinadora?
       coordinadora_dashboard_path
@@ -47,6 +49,21 @@ class ApplicationController < ActionController::Base
   def check_secretaria_role!
     unless current_user.role.to_s.downcase == "secretaria"
       redirect_to root_path, alert: "Acceso denegado: Solo personal de secretaría."
+    end
+  end
+  def check_coordinadora_role!
+    unless current_user.role.to_s.downcase == "coordinadora"
+      redirect_to root_path, alert: "Acceso denegado: Solo personal de coordinación."
+    end
+  end
+  def check_directora_role!
+    unless current_user.role.to_s.downcase == "directora"
+      redirect_to root_path, alert: "Acceso denegado: Solo personal de dirección."
+    end
+  end
+  def check_admin_role!
+    unless current_user.role.to_s.downcase == "admin"
+      redirect_to root_path, alert: "Acceso denegado: Solo ADMIN."
     end
   end
 end
