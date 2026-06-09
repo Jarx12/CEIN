@@ -5,8 +5,8 @@
       <h6 class="text-muted text-uppercase fw-bold mb-1" style="letter-spacing: 1px; font-size: 0.8rem;">Sistema Administrativo</h6>
       <h1 class="fw-bold text-dark mb-0">Gestión de RR.HH. 💼</h1>
     </div>
-    <%= link_to root_path, class: "btn btn-light border rounded-pill px-4 shadow-sm fw-semibold" do %>
-       🏠 Inicio
+    <%= link_to dashboard_path_for_current_user, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm" do %>
+      🔙 <span>Regresar a mi Panel</span>
     <% end %>
   </div>
 

@@ -4,6 +4,11 @@ class AsignaturasController < ApplicationController
 
   def index
     @asignaturas = Asignatura.includes(:nivel).all
+    if params[:from] == 'zadmin'
+      @back_path = zadmin_path
+    else
+      @back_path = dashboard_path_for_current_user
+    end
   end
 
   def new

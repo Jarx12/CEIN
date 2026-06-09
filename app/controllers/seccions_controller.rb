@@ -4,6 +4,11 @@ class SeccionsController < ApplicationController
 
   def index
     @seccions = Seccion.all
+    if params[:from] == 'zadmin'
+      @back_path = zadmin_path
+    else
+      @back_path = dashboard_path_for_current_user
+    end
   end
 
   def show

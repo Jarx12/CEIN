@@ -87,17 +87,31 @@
                 <li><%= link_to "📋 Asistencia", seleccionar_asistencia_secretaria_seccions_path, class: "nav-link" %></li>
               <% end %>
 
-              <% if current_user&.directora? || current_user&.coordinadora? || current_user&.admin?%>
+              <% if current_user&.directora? || current_user&.admin?%>
                 <li><%= link_to "💼 RRHH", rrhh_path, class: "nav-link" %></li>
               <% end %>
 
+              <% if current_user&.directora? ||  current_user&.admin? %>
+                <li><%= link_to "⚙️ Admin", zadmin_path, class: "nav-link" %></li>
+              <% end %>
+              
               <% if current_user&.profesor? %>
                 <li><%= link_to "👨‍🏫 Mi Panel", profesor_dashboard_path, class: "nav-link" %></li>
               <% end %>
 
-              <% if current_user&.directora? || current_user&.coordinadora? ||  current_user&.admin? %>
-                <li><%= link_to "⚙️ Admin", zadmin_path, class: "nav-link" %></li>
+              <% if current_user&.coordinadora? %>
+                <li><%= link_to "✅ Asistencias", seleccionar_asistencia_coordinadora_seccions_path, class: "nav-link" %></li>
               <% end %>
+              <% if current_user&.coordinadora? %>
+                <li><%= link_to "📋 Notas", seleccionar_notas_coordinadora_seccions_path, class: "nav-link" %></li>
+              <% end %>
+              <% if current_user&.coordinadora? %>
+                <li><%= link_to "🏫 Secciones", seccions_path, class: "nav-link" %></li>
+              <% end %>
+              <% if current_user&.coordinadora? %>
+                <li><%= link_to "📚 Asignaturas", asignaturas_path, class: "nav-link" %></li>
+              <% end %>
+
             </ul>
           <% end %>
         </div>
