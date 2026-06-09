@@ -59,6 +59,7 @@ end
 end
 
   # 4. Otros Dashboards de Rol
+  get 'directora/dashboard', to: 'admin/dashboards#show', as: :directora_dashboard
   get 'admin/dashboard', to: 'admin/dashboards#show', as: :admin_dashboard
 
   # 5. Recursos Administrativos (CRUD)
