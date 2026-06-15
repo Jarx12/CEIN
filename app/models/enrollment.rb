@@ -3,8 +3,8 @@ class Enrollment < ApplicationRecord
   belongs_to :academic_period
   belongs_to :seccion
   has_many :scores, dependent: :destroy
-  enum :status, { active: 0, aprobado: 1, reprobado: 2, retirado: 3 }, default: :active
-
+  enum :status, { active: 0, retirado: 3 }, default: :active
+  enum :approval_status, { pendiente: 0, confirmado: 1, rechazado: 2 }, default: :pendiente
   
   validates :alumno_id, uniqueness: { scope: :academic_period_id, message: "ya está inscrito en este periodo" }
   # Validación para no editar nada si el periodo está cerrado

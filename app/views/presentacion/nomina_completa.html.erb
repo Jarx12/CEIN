@@ -1,0 +1,141 @@
+<div class="container mt-4">
+  <%# Navigation Header %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">
+        Nómina General del Personal 💼
+        <span class="badge bg-dark rounded-pill fs-6 align-middle ms-2">
+          <%= @total_personal %> Empleados en Total
+        </span>
+      </h1>
+      <p class="text-muted mb-0">Consolidado global de docentes, administrativos y personal obrero del CEIN</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <%= link_to rrhh_path, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center shadow-sm" do %>
+        ↩️ <span class="ms-1">Regresar</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Resumen Rápido de Contadores de la Base de Datos %>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+      <div class="p-3 bg-warning-subtle rounded-4 text-center border-0">
+        <span class="fw-bold d-block fs-4 text-dark"><%= @docentes.count %></span>
+        <small class="text-muted fw-medium">👩‍🏫 Docentes</small>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="p-3 bg-primary-subtle rounded-4 text-center border-0">
+        <span class="fw-bold d-block fs-4 text-dark"><%= @administrativos.count %></span>
+        <small class="text-muted fw-medium">🏢 Administrativos</small>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="p-3 bg-danger-subtle rounded-4 text-center border-0">
+        <span class="fw-bold d-block fs-4 text-dark"><%= @obreros.count %></span>
+        <small class="text-muted fw-medium">👷 Obreros</small>
+      </div>
+    </div>
+  </div>
+
+  <%# Unified Table Card %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted">Nombre y Apellido</th>
+            <th class="py-3 border-0 text-muted text-center">Departamento</th>
+            <th class="py-3 border-0 text-muted text-center">Estatus</th>
+            <th class="py-3 border-0 text-muted text-center">Antigüedad</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones Directas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @nomina_unificada.each do |empleado| %>
+            <tr>
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <%# Iniciales con color dinámico según departamento %>
+                  <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; font-size: 0.8rem; <%= empleado.initials_bg %>">
+                    <%= empleado.name[0].upcase rescue '' %><%= empleado.apellido[0].upcase rescue '' %>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark text-capitalize">
+                      <%= empleado.name %> <%= empleado.apellido %>
+                    </div>
+                    <small class="text-muted">Cédula: <%= empleado.cedula %></small>
+                  </div>
+                </div>
+              </td>
+              
+              <%# Columna: Departamento Dinámico %>
+              <td class="text-center">
+                <span class="badge rounded-pill px-3 py-1 fw-bold <%= empleado.color_badge %>" style="font-size: 0.75rem;">
+                  <%= empleado.tipo %>
+                </span>
+              </td>
+
+              <td class="text-center">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                  Activo
+                </span>
+              </td>
+
+              <%# Service Time Logic %>
+              <td class="text-center">
+                <% if empleado.fecha_ingreso %>
+                  <div class="text-dark small fw-bold">
+                    <%= distance_of_time_in_words(empleado.fecha_ingreso, Time.now).capitalize %>
+                  </div>
+                  <div class="text-muted" style="font-size: 0.7rem;">
+                    Desde: <%= empleado.fecha_ingreso.strftime("%d/%m/%Y") %>
+                  </div>
+                <% else %>
+                  <span class="text-muted small">---</span>
+                <% end %>
+              </td>
+
+              <%# Enlaces directos utilizando el objeto original de la BD %>
+              <td class="text-end pe-4">
+                <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                  <%= link_to polymorphic_path(empleado.instance), class: "btn btn-white btn-sm border-end px-3 py-2", title: "Ver expediente" do %>
+                    👁️ Ver
+                  <% end %>
+                  <%= link_to edit_polymorphic_path(empleado.instance), class: "btn btn-white btn-sm px-3 py-2", title: "Editar" do %>
+                    ✏️ Editar
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @nomina_unificada.empty? %>
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted fst-italic">
+                No hay personal registrado en ninguna de las áreas de la base de datos.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-warning-subtle { background-color: #fef9c3 !important; }
+  .bg-primary-subtle { background-color: #dbeafe !important; }
+  .bg-danger-subtle { background-color: #fee2e2 !important; }
+  
+  .text-warning-emphasis { color: #854d0e !important; }
+  .text-primary-emphasis { color: #1e40af !important; }
+  .text-danger-emphasis { color: #991b1b !important; }
+
+  .bg-success-subtle { background-color: #d1e7dd; color: #0f5132 !important; }
+  .btn-white { background: white; color: #555; border: 1px solid #dee2e6; }
+  .btn-white:hover { background: #f8f9fa; color: #0d6efd; }
+  .table tr { transition: background-color 0.2s ease; }
+</style>

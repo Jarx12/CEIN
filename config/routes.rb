@@ -7,8 +7,11 @@ Rails.application.routes.draw do
   
   # 2. Raíz y Presentación
   root "presentacion#index"
-  get "/presentacion/info", to: "presentacion#info"
+  get "/info/noticias", to: "presentacion#noticias", as: "noticias_info"
+  get "/info/vision-mision", to: "presentacion#vision_mision", as: "vision_mision_info"
+  get "/info/consulta-publica", to: "presentacion#consulta_publica", as: "consulta_publica_info"
   get "/rrhh", to: "presentacion#rrhh", as: "rrhh"
+  get "/rrhh/nomina-completa", to: "presentacion#nomina_completa", as: "nomina_completa"
   get "/zadmin", to: "presentacion#zadmin", as: "zadmin"
 
   # 3.1 Área de los docentes
@@ -63,7 +66,15 @@ end
   get 'admin/dashboard', to: 'admin/dashboards#show', as: :admin_dashboard
 
   # 5. Recursos Administrativos (CRUD)
-  resources :alumnos
+  resources :alumnos do
+  collection do
+    get :revision  # /alumnos/revision
+  end
+  
+  member do
+    patch :confirmar_inscripcion # /alumnos/:id/confirmar_inscripcion
+  end
+  end
   resources :docentes
   resources :administrativos
   resources :obreros

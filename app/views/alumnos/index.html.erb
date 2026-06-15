@@ -1,6 +1,6 @@
 <div class="container mt-4">
   <%# Navigation Header %>
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-2">
     <div>
       <h1 class="fw-bold text-dark mb-0">
          Gestión de Alumnos🧒
@@ -10,17 +10,23 @@
       </h1>
       <p class="text-muted mb-0">Listado de estudiantes inscritos</p>
     </div>
-    
     <%= link_to dashboard_path_for_current_user, class: "btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm" do %>
       🔙 <span>Regresar a mi Panel</span>
     <% end %>
   </div>
+
 
   <%# Action Bar %>
   <div class="mb-4">
     <%= link_to new_alumno_path, class: "btn btn-primary btn-lg rounded-pill px-4 shadow d-inline-flex align-items-center gap-2" do %>
       ➕ <span>Registrar Nuevo Alumno</span>
     <% end %>
+    <%= link_to revision_alumnos_path, class: "btn btn-outline-secondary rounded-pill px-2 align-items-center shadow-sm" do %>
+      📎  <span>Alumnos por Confirmar</span>
+    <% end %>
+    <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-2 align-items-center shadow-sm" do %>
+    📎  <span>Ex-Alumnos</span>
+  <% end %>
   </div>
 
   <%# Student Table Card %>
@@ -32,6 +38,7 @@
             <th class="ps-4 py-3 border-0 text-muted">Nombre Completo</th>
             <th class="py-3 border-0 text-muted">Cédula Representante</th>
             <th class="py-3 border-0 text-muted">Seccion Inscrita</th>
+            <th class="py-3 border-0 text-muted">Grado Anterior</th>
             <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
           </tr>
         </thead>
@@ -59,6 +66,11 @@
                     <%= alumno.seccion_actual&.nombre_seccion || "Sin Inscripción Activa" %>
                   </span>
               </td>
+              <td>
+                <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-2 border border-secondary-subtle">
+                  <%= alumno.grado_anterior || "Sin Registro Anterior" %>
+                </span>
+              </td>
               <td class="text-end pe-4">
                 <div class="btn-group shadow-sm rounded-pill overflow-hidden">
                   <%= link_to alumno, class: "btn btn-white btn-sm border-end px-3 py-2", title: "Ver detalles" do %>
@@ -75,7 +87,7 @@
           <% if @alumnos.empty? %>
             <tr>
               <td colspan="3" class="text-center py-5 text-muted fst-italic">
-                No hay alumnos registrados en el sistema.
+                No hay alumnos activos en el sistema para el periodo escolar presente.
               </td>
             </tr>
           <% end %>

@@ -1,0 +1,136 @@
+<div class="container py-4" id="cartelera-eventos">
+  
+  <%# Encabezado de la Sección %>
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-0">Noticias y Próximos Eventos</h2>
+    </div>
+    <span class="text-muted small d-none d-md-block">Última actualización: <%= Time.current.strftime("%d/%m/%Y") %></span>
+  </div>
+
+  <%# Contenedor de Filas Horizontales %>
+  <div class="d-flex flex-column gap-3">
+    
+    <%# Tarjeta Horizontal 1: Convocatoria %>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-shadow transition-all">
+      <div class="card-body p-4">
+        <div class="row align-items-center g-3">
+          
+          <%# Bloque Izquierdo: Fecha Fija %>
+          <div class="col-auto">
+            <div class="bg-primary text-white text-center rounded-3 p-2 shadow-sm d-flex flex-column justify-content-center" style="width: 65px; height: 65px;">
+              <span class="d-block fw-bold fs-4 lh-1">19</span>
+              <span class="text-uppercase small fw-bold" style="font-size: 0.7rem;">Jun</span>
+            </div>
+          </div>
+
+          <%# Bloque Central: Contenido %>
+          <div class="col">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+              <span class="badge bg-danger-subtle text-danger rounded-pill fw-semibold" style="font-size: 0.75rem;">
+                ⚠️ Convocatoria
+              </span>
+              <h5 class="fw-bold text-dark mb-0 me-2">Asamblea General de Representantes</h5>
+            </div>
+            <p class="text-muted small mb-0">
+              Se solicita la asistencia obligatoria de todos los padres y representantes al encuentro de cierre de ciclo en el salón de usos múltiples del plantel.
+            </p>
+          </div>
+
+          <%# Bloque Derecho: Metadata de ubicación/hora %>
+          <div class="col-md-auto text-md-end border-start-md ps-md-3 mt-3 mt-md-0">
+            <div class="text-muted small mb-1">🕒 08:00 AM</div>
+            <div class="text-muted small">📍 Auditorio CEIN</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <%# Tarjeta Horizontal 2: Institucional %>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-shadow transition-all">
+      <div class="card-body p-4">
+        <div class="row align-items-center g-3">
+          
+          <div class="col-auto">
+            <div class="text-white text-center rounded-3 p-2 shadow-sm d-flex flex-column justify-content-center" style="width: 65px; height: 65px; background-color: #334155 !important;">
+              <span class="d-block fw-bold fs-4 lh-1">24</span>
+              <span class="text-uppercase small fw-bold" style="font-size: 0.7rem;">Jun</span>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+              <span class="badge bg-success-subtle text-success rounded-pill fw-semibold" style="font-size: 0.75rem;">
+                🎉 Institucional
+              </span>
+              <h5 class="fw-bold text-dark mb-0 me-2">Feria de Cierre de Proyecto</h5>
+            </div>
+            <p class="text-muted small mb-0">
+              Nuestros niños de las salas de 3, 4 y 5 años expondrán sus manualidades y experimentos creativos desarrollados durante el trimestre.
+            </p>
+          </div>
+
+          <div class="col-md-auto text-md-end border-start-md ps-md-3 mt-3 mt-md-0">
+            <div class="text-muted small mb-1">🕒 Todo el día</div>
+            <div class="text-muted small">🏫 Patios Centrales</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <%# Tarjeta Horizontal 3: Administrativo %>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-shadow transition-all">
+      <div class="card-body p-4">
+        <div class="row align-items-center g-3">
+          
+          <div class="col-auto">
+            <div class="text-white text-center rounded-3 p-2 shadow-sm d-flex flex-column justify-content-center" style="width: 65px; height: 65px; background-color: #334155 !important;">
+              <span class="d-block fw-bold fs-4 lh-1">06</span>
+              <span class="text-uppercase small fw-bold" style="font-size: 0.7rem;">Jul</span>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+              <span class="badge bg-info-subtle text-info rounded-pill fw-semibold" style="font-size: 0.75rem;">
+                📌 Administrativo
+              </span>
+              <h5 class="fw-bold text-dark mb-0 me-2">Entrega de Boletas Informativas</h5>
+            </div>
+            <p class="text-muted small mb-0">
+              La secretaría del plantel iniciará la entrega formal en físico y formato digital de las evaluaciones correspondientes al tercer lapso.
+            </p>
+          </div>
+
+          <div class="col-md-auto text-md-end border-start-md ps-md-3 mt-3 mt-md-0">
+            <div class="text-muted small mb-1">🕒 07:30 AM - 12:00 PM</div>
+            <div class="text-muted small">📂 Secretaría</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%# Estilos Locales Seguros %>
+<style>
+  .transition-all { 
+    transition: all 0.25s ease-in-out; 
+  }
+  .hover-shadow:hover {
+    transform: translateX(4px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.05) !important;
+  }
+  
+  /* Agrega una sutil línea divisoria interna solo en pantallas grandes */
+  @media (min-width: 768px) {
+    .border-start-md {
+      border-left: 1px solid #e2e8f0 !important;
+      min-width: 160px;
+    }
+  }
+</style>

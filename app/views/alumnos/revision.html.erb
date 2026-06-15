@@ -1,0 +1,138 @@
+<div class="container mt-4">
+  <%# Encabezado Principal %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">Panel de Control de Inscripciones 📑</h1>
+      <p class="text-muted mb-0">Gestión de nuevos ingresos y continuidad escolar</p>
+    </div>
+    <%= link_to alumnos_path, class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm" do %>
+      ↩️ Regresar a Alumnos
+    <% end %>
+  </div>
+
+  <%# ==================================================================== %>
+  <%# BLOQUE 1: ALUMNOS SIN MATRÍCULA NI SECCIÓN EN EL PERIODO ACTUAL %>
+  <% # ==================================================================== %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="card-header bg-danger-subtle py-3 border-0 d-flex justify-content-between align-items-center">
+      <h5 class="mb-0 fw-bold text-danger-emphasis">🛑 Alumnos sin Sección Asignada</h5>
+      <span class="badge bg-danger rounded-pill px-3 py-1.5 fw-bold"><%= @alumnos_sin_seccion.count %> Requieren Acción</span>
+    </div>
+    <div class="card-body bg-light-subtle pb-1">
+      <p class="text-muted small mb-3">Alumnos pendientes por asignarles una sección manualmente.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted">Nombre del Alumno</th>
+            <th class="py-3 border-0 text-muted">Último Grado Cursado</th>
+            <th class="py-3 border-0 text-muted">Representante legal</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Asignación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @alumnos_sin_seccion.each do |alumno| %>
+            <tr>
+              <td class="ps-4">
+                <div class="fw-bold text-dark text-capitalize"><%= alumno.nombre_completo %></div>
+                <small class="text-muted">Edad: <%= alumno.age %> años</small>
+              </td>
+              <td>
+                <% if alumno.grado_anterior %>
+                  <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2.5 py-1">
+                    <%= alumno.grado_anterior %> (Sección "<%= alumno.seccion_anterior.nombre_seccion %>")
+                  </span>
+                <% else %>
+                  <span class="badge bg-info-subtle text-info rounded-pill px-2.5 py-1 fw-bold">Nuevo Ingreso</span>
+                <% end %>
+              </td>
+              <td>
+                <div class="small text-dark fw-medium"><%= alumno.representante.full_name rescue 'No asignado' %></div>
+                <small class="text-muted">C.I: <%= alumno.representante_id %></small>
+              </td>
+              <td class="text-end pe-4">
+                <%# Este botón lo envía directo a editar sus datos académicos / agregar enrollment %>
+                <%= link_to edit_alumno_path(alumno, from: 'revision'), class: "btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm d-inline-flex align-items-center gap-1" do %>
+                  🎒 Editar Sección
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @alumnos_sin_seccion.empty? %>
+            <tr>
+              <td colspan="4" class="text-center py-4 text-muted fst-italic">✨ Todos los alumnos del plantel ya cuentan con matrícula asignada para este periodo.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <%# ==================================================================== %>
+  <%# BLOQUE 2: INSCRIPCIONES PROPUESTAS ESPERANDO CONFIRMACIÓN %>
+  <% # ==================================================================== %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-header bg-warning-subtle py-3 border-0 d-flex justify-content-between align-items-center">
+      <h5 class="mb-0 fw-bold text-warning-emphasis">⏳ Inscripciones por Confirmar</h5>
+      <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fw-bold"><%= @inscripciones_pendientes.count %> Pendientes</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light border-bottom">
+          <tr>
+            <th class="ps-4 py-3 border-0 text-muted">Nombre del Alumno</th>
+            <th class="py-3 border-0 text-muted">Sección / Nivel Propuesto</th>
+            <th class="py-3 border-0 text-muted">Representante Legal</th>
+            <th class="py-3 border-0 text-muted text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @inscripciones_pendientes.each do |inscripcion| %>
+            <tr>
+              <td class="ps-4">
+                <div class="fw-bold text-dark text-capitalize"><%= inscripcion.alumno.nombre_completo %></div>
+                <small class="text-muted">Edad actual: <%= inscripcion.alumno.age %> años</small>
+              </td>
+              <td>
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold" style="font-size: 0.75rem;">
+                  <%= inscripcion.seccion.nivel.nombre_nivel %> — Sección "<%= inscripcion.seccion.nombre_seccion %>"
+                </span>
+              </td>
+              <td>
+                <div class="small text-dark fw-medium"><%= inscripcion.alumno.representante.full_name rescue 'No registrado' %></div>
+                <small class="text-muted">C.I: <%= inscripcion.alumno.representante_id %></small>
+              </td>
+              <td class="text-end pe-4">
+            <%= link_to edit_alumno_path(inscripcion.alumno, from: 'revision'), class: "btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm d-inline-flex align-items-center gap-1" do %>
+                  🎒 Editar Alumno
+            <% end %>
+                <%= button_to confirmar_inscripcion_alumno_path(inscripcion), 
+                              method: :patch, 
+                              class: "btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm", 
+                              data: { confirm: "¿Dar el aval oficial de Dirección a esta matrícula?" } do %>
+                  ✅ Confirmar Cupo
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @inscripciones_pendientes.empty? %>
+            <tr>
+              <td colspan="4" class="text-center py-4 text-muted fst-italic">✨ No hay planillas de secretaría en espera de firma.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-danger-subtle { background-color: #ffeeef !important; color: #a9212a !important; }
+  .bg-warning-subtle { background-color: #fef9ec !important; color: #8a6d1c !important; }
+  .bg-primary-subtle { background-color: #dbeafe !important; color: #1e40af !important; }
+  .btn-warning { background-color: #f59e0b; border: none; color: white; }
+  .btn-warning:hover { background-color: #d97706; color: white; }
+  .btn-success { background-color: #10b981; border: none; }
+  .btn-success:hover { background-color: #059669; }
+</style>

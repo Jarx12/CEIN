@@ -1,0 +1,100 @@
+<%# Section: Consulta Pública de Inscripción (Hero Section) %>
+<div id="consulta-publica" class="py-5 mb-5 bg-light rounded-5 border-0 position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+  <div class="row justify-content-center align-items-center px-4 px-md-5">
+    <div class="col-lg-7 mb-4 mb-lg-0">
+      <span class="badge bg-primary text-uppercase px-3 py-2 rounded-pill mb-3" style="letter-spacing: 1px; font-size: 0.75rem;">
+        🔍 Consulta en Línea
+      </span>
+      <h1 class="display-5 fw-bold text-dark mb-3">Estado de Inscripción</h1>
+      <p class="lead text-muted mb-4">
+        Estimado representante, introduzca su número de cédula de identidad para verificar el estatus oficial de la matrícula de su representado para el periodo escolar actual.
+      </p>
+
+      <%# Formulario de Búsqueda %>
+      <%= form_with url: "#", method: :get, local: true, id: "public-search-form", class: "bg-white p-3 rounded-4 shadow-sm border" do |form| %>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <%= form.select :nacionalidad, [["V-", "V"], ["E-", "E"]], {}, { class: "form-select form-select-lg fw-bold border-0 bg-light" } %>
+          </div>
+          <div class="col-md-6">
+            <%= form.number_field :cedula_representante, 
+                class: "form-control form-select-lg border-0 bg-light fw-semibold", 
+                placeholder: "Ej: 12345678", 
+                required: true,
+                id: "cedula_input" %>
+          </div>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+              <span>Buscar</span> 🔍
+            </button>
+          </div>
+        </div>
+      <% end %>
+
+      <%# Contenedor Dinámico de Resultados (Oculto inicialmente) %>
+      <div id="resultado-consulta" class="mt-4 d-none">
+        <%# El contenido se inyectará dinámicamente mediante JS %>
+      </div>
+    </div>
+
+    <div class="col-lg-5 text-center d-none d-lg-block">
+      <span style="font-size: 11rem; opacity: 0.15;" class="user-select-none">📋</span>
+    </div>
+  </div>
+</div>
+
+
+
+
+<%# Lógica JavaScript Interactiva Interina %>
+<script>
+  document.getElementById('public-search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const cedula = document.getElementById('cedula_input').value.trim();
+    const resultBox = document.getElementById('resultado-consulta');
+    
+    // Mostramos la caja de resultados animada
+    resultBox.classList.remove('d-none');
+    
+    // Simulación provisional basada en el número introducido para pruebas:
+    if (cedula.endsWith('1') || cedula.endsWith('3')) {
+      // Caso 1: Inscrito Completo
+      resultBox.innerHTML = `
+        <div class="card border-0 bg-success bg-opacity-10 rounded-4 p-4 animate__animated animate__fadeIn">
+          <div class="d-flex align-items-center gap-3">
+            <span style="font-size: 2.5rem;">✅</span>
+            <div>
+              <h5 class="fw-bold text-success mb-1">Inscripción Confirmada</h5>
+              <p class="mb-0 text-dark small">Representado: <strong>MENDOZA PÉREZ, SANTIAGO ALEJANDRO</strong></p>
+              <p class="mb-0 text-muted small">Nivel: Sala de 5 años | Sección: "A" (Turno Mañana)</p>
+            </div>
+          </div>
+        </div>`;
+    } else if (cedula.endsWith('2')) {
+      // Caso 2: Registrado pero falta algún recaudo físico
+      resultBox.innerHTML = `
+        <div class="card border-0 bg-warning bg-opacity-10 rounded-4 p-4 animate__animated animate__fadeIn">
+          <div class="d-flex align-items-center gap-3">
+            <span style="font-size: 2.5rem;">⚠️</span>
+            <div>
+              <h5 class="fw-bold text-warning-emphasis mb-1">Documentación Pendiente</h5>
+              <p class="mb-0 text-dark small">Representado: <strong>RODRÍGUEZ GÓMEZ, VALENTINA</strong></p>
+              <p class="mb-0 text-muted small">Estatus: Pre-inscrito. Por favor, consigne la copia de la cartilla de vacunación en Secretaría.</p>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      // Caso 3: No encontrado
+      resultBox.innerHTML = `
+        <div class="card border-0 bg-danger bg-opacity-10 rounded-4 p-4 animate__animated animate__fadeIn">
+          <div class="d-flex align-items-center gap-3">
+            <span style="font-size: 2.5rem;">❌</span>
+            <div>
+              <h5 class="fw-bold text-danger mb-1">Cédula No Registrada</h5>
+              <p class="mb-0 text-muted small">No se encontraron alumnos asociados a este documento para el periodo lectivo en curso. Verifique los datos o acuda a Dirección.</p>
+            </div>
+          </div>
+        </div>`;
+    }
+  });
+</script>

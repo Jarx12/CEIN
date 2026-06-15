@@ -12,8 +12,8 @@
       <div class="col-lg-7 text-center text-lg-start">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-3 justify-content-center justify-content-lg-start">
-            <li class="breadcrumb-item text-primary fw-bold text-uppercase small" style="letter-spacing: 1px;">SICEIN</li>
-            <li class="breadcrumb-item active small" aria-current="page">Portal Informativo</li>
+            <li class="breadcrumb-item text-primary fw-bold text-uppercase small" style="letter-spacing: 1px;">Portal Informativo</li>
+            <li class="breadcrumb-item active small" aria-current="page">SICEIN</li>
           </ol>
         </nav>
         
@@ -29,34 +29,35 @@
         <div class="d-flex flex-column flex-md-row gap-3 justify-content-center justify-content-lg-start mt-4">
           <% if authenticated? %>
             <%= link_to "Ir a mi Panel", user_dashboard_path, class: "btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold" %>
-            <%= link_to "Información Institucional", presentacion_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
+            <%= link_to "Noticias Institucionales", noticias_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
+            <%= link_to "Vision y Mision", vision_mision_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
+            <%= link_to "Consulta Publica", consulta_publica_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
           <% else %>
             <%= link_to "Acceder al Sistema", new_session_path, class: "btn btn-primary btn-lg px-5 rounded-pill shadow-sm fw-bold" %>
-            <%= link_to "Información Institucional", presentacion_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
+            <%= link_to "Noticias Institucionales", noticias_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
+            <%= link_to "Vision y Mision", vision_mision_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
+            <%= link_to "Consulta Publica", consulta_publica_info_path, class: "btn btn-outline-dark btn-lg px-4 rounded-pill" %>
           <% end %>
         </div>
       </div>
     </div>
   </div>
 
-  <%# Section: Pilares del Sistema (Más informativo, menos menú) %>
-  <div id="features" class="row g-4 text-center mt-2">
-    <div class="col-12 mb-2">
-      <h3 class="fw-bold">Nuestra Gestión Administrativa</h3>
-      <p class="text-muted">Optimización de procesos para el bienestar de nuestra comunidad educativa.</p>
+  <div id="features" class="row g-0 text-center mt-2">
+    <div class="col-14 mb-2">
+      <h3 class="fw-bold">Pilares de Nuestra Gestion:</h3>
     </div>
-
     <div class="col-md-4">
       <div class="p-4 rounded-4 bg-white shadow-sm border h-100 transition-up">
-        <div class="mb-3 text-primary h1 text-opacity-75">🏢</div>
+        <div class="mb-2 text-primary h1 text-opacity-75">🏢</div>
         <h5 class="fw-bold">Institucional</h5>
-        <p class="text-muted small mb-0">Centralización de datos fundamentales de la institución y su estructura organizacional.</p>
+        <p class="text-muted small mb-0">Centralización de datos fundamentales del Centro Educativo y su estructura organizacional.</p>
       </div>
     </div>
 
     <div class="col-md-4">
       <div class="p-4 rounded-4 bg-white shadow-sm border h-100 transition-up">
-        <div class="mb-3 text-success h1 text-opacity-75">👨‍👩‍👧‍👦</div>
+        <div class="mb-2 text-success h1 text-opacity-75">👨‍👩‍👧‍👦</div>
         <h5 class="fw-bold">Comunidad</h5>
         <p class="text-muted small mb-0">Vinculación efectiva entre representantes, alumnos y el personal docente.</p>
       </div>
@@ -64,8 +65,8 @@
 
     <div class="col-md-4">
       <div class="p-4 rounded-4 bg-white shadow-sm border h-100 transition-up">
-        <div class="mb-3 text-warning h1 text-opacity-75">📊</div>
-        <h5 class="fw-bold">Seguimiento</h5>
+        <div class="mb-2 text-warning h1 text-opacity-75">📊</div>
+        <h5 class="fw-bold">Transparencia</h5>
         <p class="text-muted small mb-0">Herramientas precisas para el control de asistencia y evaluaciones académicas.</p>
       </div>
     </div>

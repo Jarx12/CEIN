@@ -18,10 +18,13 @@ class Alumno < ApplicationRecord
   validates :representante_id, presence: true
   validates :birthday, presence: true
   has_one_attached :acta_nacimiento
+  has_one_attached :record_academico
 
   validates :acta_nacimiento, content_type: [:pdf, 'image/png', 'image/jpeg'],
                               size: { less_than: 5.megabytes , message: 'es muy pesado (máximo 5MB)' }
-
+  validates :record_academico, content_type: [:pdf, 'image/png', 'image/jpeg'],
+                              size: { less_than: 5.megabytes , message: 'es muy pesado (máximo 5MB)' }
+                              
   def nombre_completo
     "#{name} #{apellido}"
   end
@@ -35,17 +38,37 @@ class Alumno < ApplicationRecord
   # Método para saber el grado/nivel actual
   def grado_actual
     enrollments.joins(:academic_period)
-               .find_by(academic_periods: { status: :active })&.grade_level
+               .find_by(academic_periods: { status: :active })&.seccion&.nivel&.nombre_nivel
   end
   
+  def ultimo_enrollment_pasado
+    enrollments.joins(:academic_period)
+               .where(academic_periods: { status: :closed }) # O el enum/estado que uses para periodos ya finalizados
+               .order('academic_periods.created_at DESC') # O por año escolar descendente
+               .first
+  end
+
+  # Determina el nivel/grado anterior
+  def grado_anterior
+    ultimo_enrollment_pasado&.seccion&.nivel&.nombre_nivel
+  end
+
+  # Determina la sección anterior
+  def seccion_anterior
+    ultimo_enrollment_pasado&.seccion
+  end
+
+
+
+
   def representantes_diferentes
     if representante_secundario_id.present? && representante_id == representante_secundario_id
       errors.add(:representante_secundario_id, "no puede ser la misma persona que el representante principal")
+    end
   end
   def age
   return unless birthday
   ((Time.zone.now - birthday.to_time) / 1.year.seconds).floor
   end
   
-end
 end

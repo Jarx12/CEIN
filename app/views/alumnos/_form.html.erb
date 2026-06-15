@@ -69,7 +69,7 @@
         </div>
 
         <%= form_with model: alumno, local: true do |form| %>
-            
+            <%= hidden_field_tag :from, params[:from] %>
             <div class="row g-3">
                 <div class="col-12"><small class="text-muted fw-bold text-uppercase">Datos del Estudiante</small></div>
                 
