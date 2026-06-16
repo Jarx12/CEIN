@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_15_174806) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_16_001423) do
   create_table "academic_periods", force: :cascade do |t|
     t.string "name"
     t.date "start_date"
@@ -124,6 +124,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_15_174806) do
     t.integer "alumno_id", null: false
     t.integer "seccion_id", null: false
     t.integer "approval_status", default: 0, null: false
+    t.integer "withdrawal_reason"
     t.index ["alumno_id", "academic_period_id"], name: "index_enrollments_on_alumno_and_period", unique: true
     t.index ["alumno_id"], name: "index_enrollments_on_alumno_id"
     t.index ["approval_status"], name: "index_enrollments_on_approval_status"

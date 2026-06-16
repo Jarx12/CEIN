@@ -24,7 +24,7 @@
     <%= link_to revision_alumnos_path, class: "btn btn-outline-secondary rounded-pill px-2 align-items-center shadow-sm" do %>
       📎  <span>Alumnos por Confirmar</span>
     <% end %>
-    <%= link_to root_path, class: "btn btn-outline-secondary rounded-pill px-2 align-items-center shadow-sm" do %>
+    <%= link_to retirados_alumnos_path, class: "btn btn-outline-secondary rounded-pill px-2 align-items-center shadow-sm" do %>
     📎  <span>Ex-Alumnos</span>
   <% end %>
   </div>
@@ -78,6 +78,9 @@
                   <% end %>
                   <%= link_to edit_alumno_path(alumno), class: "btn btn-white btn-sm px-3 py-2", title: "Editar datos" do %>
                     ✏️ Editar
+                  <% end %>
+                <%= link_to retirar_alumno_path(alumno), class: "btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" do %>
+                    🚫 Retirar Alumno
                   <% end %>
                 </div>
               </td>

@@ -69,10 +69,14 @@ end
   resources :alumnos do
   collection do
     get :revision  # /alumnos/revision
+    get :retirados
   end
   
   member do
     patch :confirmar_inscripcion # /alumnos/:id/confirmar_inscripcion
+    get :retirar
+    patch :procesar_retiro
+    patch :reincorporar
   end
   end
   resources :docentes

@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">Historial de Alumnos Retirados 📁</h1>
+      <p class="text-muted mb-0">Alumnos desincorporados durante el periodo escolar actual</p>
+    </div>
+    <%= link_to alumnos_path, class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm" do %>
+      ↩️ Volver al Index
+    <% end %>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light text-secondary uppercase-subtle">
+          <tr>
+            <th class="ps-4">Alumno</th>
+            <th>Cédula del Representante</th>
+            <th>Última Sección</th>
+            <th>Motivo del Retiro</th>
+            <th class="text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @alumnos_retirados.any? %>
+            <% @alumnos_retirados.each do |alumno| %>
+              <% enrollment_retirado = alumno.enrollments.find_by(academic_period: @periodo_activo) %>
+              <tr>
+                <td class="ps-4">
+                  <div class="fw-bold text-dark text-capitalize"><%= alumno.nombre_completo %></div>
+                </td>
+                <td><%= alumno.representante_id %></td>
+                <td>
+                  <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill px-2">
+                    <%= enrollment_retirado.seccion.nombre_seccion rescue 'Sin sección' %>
+                  </span>
+                </td>
+                <td>
+                  <% if enrollment_retirado.withdrawal_reason == "traslado_voluntario" %>
+                    <span class="text-warning-emphasis fw-semibold">🔀 Traslado Voluntario</span>
+                  <% else %>
+                    <span class="text-danger-emphasis fw-semibold">🎓 Máximo Nivel Educativo</span>
+                  <% end %>
+                </td>
+                <td class="text-end pe-4">
+                  <%= button_to reincorporar_alumno_path(alumno), 
+                                method: :patch, 
+                                class: "btn btn-sm btn-success rounded-pill px-3 fw-bold shadow-sm",
+                                data: { confirm: "¿Desea reincorporar a #{alumno.nombre_completo} a sus listas de clase?" } do %>
+                    🔄 Reincorporar Alumno
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted">
+                <span class="fs-1 d-block mb-2">🍃</span>
+                No hay alumnos registrados como retirados en este periodo escolar.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
