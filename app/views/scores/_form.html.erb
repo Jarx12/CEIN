@@ -116,7 +116,7 @@
         
         <% 
             if score.persisted? 
-              cancel_path = notas_por_alumno_path(score.enrollment.alumno)
+              cancel_path = alumno_scores_path(score.enrollment.alumno)
             elsif @seccion
               # Si venimos del selector, regresar al selector manteniendo el modo
               cancel_path = selector_scores_path(mode: 'individual', seccion_id: @seccion.id)

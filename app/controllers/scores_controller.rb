@@ -1,12 +1,28 @@
 class ScoresController < ApplicationController
   before_action :set_score, only: %i[edit update destroy]
 
-  def index
-    @enrollments_con_notas = Enrollment.joins(:scores)
-                                       .where(academic_period: AcademicPeriod.current)
-                                       .distinct
-                                       .includes(:alumno)
+def index
+  # 1. Tu lógica original para el listado inferior (Periodo actual)
+  @enrollments_con_notas = Enrollment.joins(:scores)
+                                     .where(academic_period: AcademicPeriod.current)
+                                     .distinct
+                                     .includes(:alumno)
+
+  # 2. Lógica 100% Rails para el Buscador Histórico
+  # Capturamos lo que venga del formulario
+  @periodo_seleccionado_id = params[:historico_periodo_id]
+  @seccion_seleccionada_id = params[:historico_seccion_id]
+
+  if @periodo_seleccionado_id.present? && @seccion_seleccionada_id.present?
+    # Buscamos las matrículas (enrollments) que coincidan con ese salón y ese año
+    @enrollments_filtrados = Enrollment.where(
+      academic_period_id: @periodo_seleccionado_id,
+      seccion_id: @seccion_seleccionada_id
+    ).includes(:alumno).order("alumnos.apellido ASC")
+  else
+    @enrollments_filtrados = []
   end
+end
 
   def new
     # Si venimos del selector, ya tendremos seccion_id y subject_id
@@ -30,7 +46,7 @@ class ScoresController < ApplicationController
     @score = Score.new(processed_params)
     
     if @score.save
-      redirect_to notas_por_alumno_path(@score.enrollment.alumno), 
+      redirect_to alumno_scores_path(@score.enrollment.alumno), 
                   notice: "Calificación guardada correctamente."
     else
       render :new, status: :unprocessable_entity
@@ -40,7 +56,7 @@ class ScoresController < ApplicationController
   def update
     # Convertimos la nota antes de actualizar
     if @score.update(score_params.merge(nota: convert_nota(score_params[:nota])))
-      redirect_to notas_por_alumno_path(@score.enrollment.alumno), 
+      redirect_to alumno_scores_path(@score.enrollment.alumno), 
                   notice: "Calificación actualizada correctamente."
     else
       render :edit, status: :unprocessable_entity
@@ -76,16 +92,25 @@ class ScoresController < ApplicationController
   end
 
   def notas_por_alumno
-  @alumno = Alumno.find(params[:id])
-  @enrollment = @alumno.enrollments.last 
+    @alumno = Alumno.find(params[:id])
+    
+    # 📑 Si pasamos un periodo por el formulario lo usamos, si no, usamos el actual por defecto
+    if params[:periodo_id].present?
+      @periodo_consultado = AcademicPeriod.find(params[:periodo_id])
+    else
+      @periodo_consultado = AcademicPeriod.current
+    end
 
-  if @enrollment
-    @scores = @enrollment.scores
-  else
-    @scores = []
-    flash[:notice] = "Este alumno no tiene una matrícula activa."
+    # Buscamos la matrícula correspondiente a ESE año escolar específico
+    @enrollment = @alumno.enrollments.find_by(academic_period: @periodo_consultado)
+
+    if @enrollment
+      @scores = @enrollment.scores.includes(:asignatura)
+    else
+      @scores = []
+      flash.now[:notice] = "Este alumno no tiene una matrícula registrada en el periodo #{@periodo_consultado&.name}."
+    end
   end
-end
 
   def destroy
     @score.destroy

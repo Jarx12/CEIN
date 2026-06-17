@@ -41,6 +41,105 @@
     </div>
   </div>
 
+  
+<div class="row mb-5">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm rounded-4 bg-light">
+      <div class="card-body p-4">
+        <h5 class="fw-bold text-dark mb-1">🗄️ Consulta de Boletines Históricos</h5>
+        <p class="text-muted small mb-4">Busca y genera reportes de notas de lapsos pasados o actuales filtrando por periodo y aula.</p>
+
+        <div class="row g-4">
+          <%# PARTE 1: Formulario para seleccionar el Grupo (Periodo y Sección) %>
+          <div class="col-md-6 border-end">
+            <h6 class="fw-bold text-secondary mb-3">Paso 1: Seleccionar Aula</h6>
+            
+            <%= form_with url: scores_path, method: :get, local: true, class: "row g-3 align-items-end" do |f| %>
+              <div class="col-sm-6">
+                <%= f.label :historico_periodo_id, "Periodo Académico", class: "form-label small fw-bold text-muted" %>
+                <%= f.collection_select :historico_periodo_id, AcademicPeriod.order(created_at: :desc), :id, :name, 
+                                        { selected: @periodo_seleccionado_id, prompt: "Seleccione periodo..." }, 
+                                        { class: "form-select rounded-3", required: true } %>
+              </div>
+
+              <div class="col-sm-6">
+                <%= f.label :historico_seccion_id, "Sección", class: "form-label small fw-bold text-muted" %>
+                <%= f.collection_select :historico_seccion_id, Seccion.all, :id, :nombre_seccion, 
+                                        { selected: @seccion_seleccionada_id, prompt: "Seleccione sección..." }, 
+                                        { class: "form-select rounded-3", required: true } %>
+              </div>
+
+              <div class="col-12 text-end">
+                <%= f.submit "Buscar Alumnos", class: "btn btn-secondary btn-sm fw-bold rounded-pill px-4 shadow-sm" %>
+              </div>
+            <% end %>
+          </div>
+
+        <%# PARTE 2: Formulario para elegir al Alumno (Se activa solo si ya se buscó el aula) %>
+        <div class="col-md-6">
+          <h6 class="fw-bold text-secondary mb-3">Paso 2: Seleccionar Estudiante</h6>
+
+          <% if @enrollments_filtrados.any? %>
+            <%# El formulario apunta a una URL base vacía ya que el JS inline la va a sobreescribir %>
+            <%= form_with url: "#", method: :get, local: true, id: "form-visor-boletin", class: "row g-3 align-items-end" do |f| %>
+              
+              <%# 📑 TRUCO: Pasamos el periodo_id en un campo oculto estándar para que Rails lo reciba limpio %>
+              <%= f.hidden_field :periodo_id, value: @periodo_seleccionado_id %>
+
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">Alumnos Inscritos en este grupo:</label>
+                
+                <%# NOTA: Le quitamos el atributo 'name' para que el navegador NO lo meta en la URL final %>
+                <select class="form-select rounded-3" required 
+                        onchange="
+                          const btn = document.getElementById('btn-submit-boletin');
+                          if(this.value) {
+                            // Seteamos el action con el ID del alumno pelado (ej: /scores/alumno/5)
+                            document.getElementById('form-visor-boletin').action = '/scores/alumno/' + this.value;
+                            btn.removeAttribute('disabled');
+                            btn.classList.remove('disabled');
+                          } else {
+                            btn.setAttribute('disabled', 'disabled');
+                            btn.classList.add('disabled');
+                          }
+                        ">
+                  <option value="">Seleccione el alumno...</option>
+                  <% @enrollments_filtrados.each do |enrollment| %>
+                    <%# Ahora el VALUE de la opción es ÚNICAMENTE el ID numérico del alumno %>
+                    <option value="<%= enrollment.alumno_id %>">
+                      <%= enrollment.alumno.nombre_completo %>
+                    </option>
+                  <% end %>
+                </select>
+              </div>
+
+              <div class="col-12 text-end">
+                <button type="submit" id="btn-submit-boletin" class="btn btn-dark btn-sm fw-bold rounded-pill px-4 shadow-sm disabled" disabled>
+                  📄 Ver Boletín Informativo
+                </button>
+              </div>
+            <% end %>
+
+          <% elsif @periodo_seleccionado_id.present? %>
+            <div class="alert alert-warning rounded-3 small py-2 mt-4 mb-0" role="alert">
+              ⚠️ No se encontraron alumnos matriculados en este salón para el periodo seleccionado.
+            </div>
+          <% else %>
+            <div class="text-center text-muted py-4">
+              <p class="small mb-0 italic">Realice la búsqueda del Paso 1 para desplegar la lista de alumnos historicos.</p>
+            </div>
+          <% end %>
+        </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
   <hr class="my-5">
 
   <h2 class="h4 mb-3 text-secondary">Listado de Alumnos con Calificaciones</h2>
@@ -73,3 +172,5 @@
     </table>
   </div>
 </div>
+
+
