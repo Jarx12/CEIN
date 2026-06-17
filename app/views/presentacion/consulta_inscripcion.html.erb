@@ -1,0 +1,142 @@
+<%# Section: Consulta Pública de Inscripción (Hero Section - Centrado a la Izquierda) %>
+<div id="consulta-publica" class="py-5 mb-5 bg-light rounded-0 border position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+  <div class="row justify-content-start align-items-center px-4 px-md-5">
+    
+    <%# Columna de contenido %>
+    <div class="col-lg-7 mb-4 mb-lg-0">
+      <span class="badge bg-primary text-uppercase px-3 py-2 rounded-0 mb-3" style="letter-spacing: 1px; font-size: 0.75rem;">
+        🔍 Consulta en Línea
+      </span>
+      <h1 class="display-5 fw-bold text-dark mb-3">Estado de Inscripción</h1>
+      <p class="lead text-muted mb-4">
+        Estimado representante, introduzca su número de cédula de identidad para verificar el estatus oficial de la matrícula de su representado para el periodo escolar actual.
+      </p>
+
+      <%# Formulario de Búsqueda %>
+      <%= form_with url: "/consulta-inscripcion", method: :get, local: true, data: { turbo: false }, id: "public-search-form", class: "bg-white p-3 rounded-0 shadow-sm border" do |form| %>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <%= form.select :nacionalidad, [["V-", "V"], ["E-", "E"]], { selected: params[:nacionalidad] }, { class: "form-select form-select-lg fw-bold border-0 bg-light rounded-0" } %>
+          </div>
+          <div class="col-md-6">
+            <%= form.number_field :cedula_representante, 
+                value: params[:cedula_representante],
+                class: "form-control form-select-lg border-0 bg-light fw-semibold rounded-0", 
+                placeholder: "Ej: 12345678", 
+                required: true,
+                id: "cedula_input" %>
+          </div>
+          <div class="col-md-3">
+            <%= form.button type: :submit, class: "btn btn-primary btn-lg w-100 rounded-0 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" do %>
+              <span>Buscar</span> 🔍
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <%# 📋 CONTENEDOR DE RESULTADOS %>
+      <% if params[:cedula_representante].present? %>
+        <div id="resultado-consulta" class="mt-4">
+          
+          <%# CASO 1: La cédula no existe en la tabla de representantes %>
+          <% if @representante.nil? %>
+            <div class="card border-0 bg-danger bg-opacity-10 rounded-0 p-4 shadow-sm">
+              <div class="d-flex align-items-center gap-3">
+                <span style="font-size: 2.5rem;">❌</span>
+                <div>
+                  <h5 class="fw-bold text-danger mb-1">Cédula No Registrada</h5>
+                  <p class="mb-0 text-muted small">No encontramos ningún representante asociado al número <strong><%= params[:nacionalidad] %>-<%= params[:cedula_representante] %></strong>. Verifique los datos ingresados.</p>
+                </div>
+              </div>
+            </div>
+
+          <%# CASO 2: El representante existe pero no hay matrículas (enrollments) %>
+          <% elsif @enrollments.nil? || @enrollments.empty? %>
+            <div class="card border-0 bg-secondary bg-opacity-10 rounded-0 p-4 shadow-sm">
+              <div class="d-flex align-items-center gap-3">
+                <span style="font-size: 2.5rem;">⚠️</span>
+                <div>
+                  <h5 class="fw-bold text-secondary mb-1">Sin Matrícula Activa</h5>
+                  <p class="mb-0 text-dark small">Representante: <strong><%= @representante.apellido %>, <%= @representante.name %></strong></p>
+                  <p class="mb-0 text-muted small mt-1">Usted está registrado en el sistema, pero su representado no posee una inscripción cargada para el periodo lectivo en curso.</p>
+                </div>
+              </div>
+            </div>
+
+          <%# CASO 3: Alumnos encontrados con matrículas %>
+          <% else %>
+            <h6 class="text-secondary fw-bold mb-3 mt-2">Estudiantes asociados a su documentación:</h6>
+            
+            <% @enrollments.each do |enrollment| %>
+              <div class="card rounded-0 p-4 shadow-sm mb-3 bg-white border border-start border-4 style-card-status">
+                <div class="d-flex align-items-start gap-3">
+                  
+                  <%# A. EVALUACIÓN DE RETIRADO (Revisamos columna status o withdrawal_reason) %>
+                  <% if enrollment.status.to_s == "retirado" || enrollment.withdrawal_reason.present? %>
+                <%# --- ESTADO: RETIRADO --- %>
+                <span style="font-size: 2.2rem;">🚫</span>
+                <div class="w-100">
+                    <span class="badge bg-danger text-uppercase mb-1 rounded-0">Retirado</span>
+                    <h5 class="fw-bold text-dark mb-1"><%= enrollment.alumno.apellido %>, <%= enrollment.alumno.name %></h5>
+                    
+                    <div class="mt-2 p-2 bg-danger bg-opacity-10 rounded-0 border-start border-danger">
+                    <p class="mb-0 text-danger-emphasis small fw-semibold">Estatus de Matrícula:</p>
+                    
+                    <%# 🔄 DICCIONARIO %>
+                    <% 
+                        motivos_humanos = {
+                        "egreso_maximo_nivel" => "Egreso por culminación del máximo nivel del plantel",
+                        "traslado_voluntario" => "Traslado voluntario a otra institución",
+                        }
+                        
+                        # Tomamos el valor de la base de datos como string
+                        razon_raw = enrollment.withdrawal_reason.to_s
+                        
+                        # Buscamos en el diccionario. Si no existe la palabra, mostramos el texto original humanizado
+                        motivo_final = motivos_humanos[razon_raw] || razon_raw.humanize
+                    %>
+                    
+                    <p class="mb-0 text-dark small italic">"<%= motivo_final %>"</p>
+                    </div>
+                </div>
+
+                  <%# B. EVALUACIÓN DE PENDIENTE (approval_status default 0) %>
+                  <% elsif enrollment.approval_status == 0 || enrollment.approval_status.to_s == "pendiente" %>
+                    <span style="font-size: 2.2rem;">⏳</span>
+                    <div>
+                      <span class="badge bg-warning text-dark text-uppercase mb-1 rounded-0">Inscripción Pendiente</span>
+                      <h5 class="fw-bold text-warning-emphasis mb-1"><%= enrollment.alumno.apellido %>, <%= enrollment.alumno.name %></h5>
+                      <p class="mb-0 text-muted small">Estatus: Pre-inscrito en sistema. A la espera de ser confirmado por la Coordinacion Academica.</p>
+                    </div>
+
+                  <%# C. EVALUACIÓN DE APROBADO %>
+                  <% else %>
+                    <span style="font-size: 2.2rem;">✅</span>
+                    <div>
+                      <span class="badge bg-success text-uppercase mb-1 rounded-0">Inscripción Confirmada</span>
+                      <h5 class="fw-bold text-success mb-1"><%= enrollment.alumno.apellido %>, <%= enrollment.alumno.name %></h5>
+                      <%# Buscamos de forma segura el nivel y la sección según tus llaves foráneas %>
+                      <p class="mb-0 text-dark small">
+                        Nivel: <%= enrollment.seccion&.nivel_id ? Nivel.find_by(id: enrollment.seccion.nivel_id)&.nombre_nivel : "Asignado" %> 
+                        | Sección: <strong>"<%= enrollment.seccion&.nombre_seccion || 'Sin Sección asignada' %>"</strong>
+                      </p>
+                      <p class="mb-0 text-muted small">La matrícula se encuentra validada de forma oficial para el año escolar en curso.</p>
+                    </div>
+                  <% end %>
+
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+
+        </div>
+      <% end %>
+    </div>
+
+    <%# Columna decorativa derecha %>
+    <div class="col-lg-5 text-center d-none d-lg-block">
+      <span style="font-size: 11rem; opacity: 0.15;" class="user-select-none">📋</span>
+    </div>
+
+  </div>
+</div>

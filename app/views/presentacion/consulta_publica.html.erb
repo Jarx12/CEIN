@@ -1,0 +1,53 @@
+<%# Section: Consulta Pública de Inscripción (Hero Section - Centrado a la Izquierda) %>
+<div id="consulta-publica" class="py-5 mb-5 bg-light rounded-0 border position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+  <div class="row justify-content-start align-items-center px-4 px-md-5">
+    
+    <%# Columna de contenido alineada a la izquierda %>
+    <div class="col-lg-7 mb-4 mb-lg-0">
+      <%# Badge cuadrado %>
+      <span class="badge bg-primary text-uppercase px-3 py-2 rounded-0 mb-3" style="letter-spacing: 1px; font-size: 0.75rem;">
+        🔍 Consulta en Línea
+      </span>
+      <h1 class="display-5 fw-bold text-dark mb-3">Estado de Inscripción</h1>
+      <p class="lead text-muted mb-4">
+        Estimado representante, introduzca su número de cédula de identidad para verificar el estatus oficial de la matrícula de su representado para el periodo escolar actual.
+      </p>
+
+      <%# Formulario de Búsqueda Cuadrado %>
+      <%= form_with url: "/consulta-inscripcion", method: :get, local: true, data: { turbo: false }, id: "public-search-form", class: "bg-white p-3 rounded-0 shadow-sm border" do |form| %>
+        <div class="row g-2">
+          
+          <% # 1. Selector de Nacionalidad (Cuadrado) %>
+          <div class="col-md-3">
+            <%= form.select :nacionalidad, [["V-", "V"], ["E-", "E"]], { selected: params[:nacionalidad] }, { class: "form-select form-select-lg fw-bold border-0 bg-light rounded-0" } %>
+          </div>
+          
+          <% # 2. Campo de Cédula (Cuadrado) %>
+          <div class="col-md-6">
+            <%= form.number_field :cedula_representante, 
+                value: params[:cedula_representante],
+                class: "form-control form-select-lg border-0 bg-light fw-semibold rounded-0", 
+                placeholder: "Ej: 12345678", 
+                required: true,
+                id: "cedula_input" %>
+          </div>
+          
+          <% # 3. Botón de Envío (Cuadrado) %>
+          <div class="col-md-3">
+            <%= form.button type: :submit, class: "btn btn-primary btn-lg w-100 rounded-0 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" do %>
+              <span>Buscar</span> 🔍
+            <% end %>
+          </div>
+
+        </div>
+      <% end %>
+
+     
+
+    <%# Columna derecha: Icono decorativo ocupando el espacio restante a la derecha %>
+    <div class="col-lg-5 text-center d-none d-lg-block">
+      <span style="font-size: 11rem; opacity: 0.15;" class="user-select-none">📋</span>
+    </div>
+
+  </div>
+</div>

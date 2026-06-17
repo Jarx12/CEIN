@@ -14,6 +14,36 @@ class PresentacionController < ApplicationController
   end
   def zadmin
   end
+
+  def consulta_inscripcion
+    @cedula = params[:cedula_representante].to_s.strip.to_i
+    @nacionalidad = params[:nacionalidad]
+
+    if @cedula > 0
+      @representante = Representante.find_by(cedula: @cedula)
+      
+      if @representante
+        # Buscamos el periodo con estatus activo (status: 1) o el último creado
+        periodo_actual = AcademicPeriod.find_by(status: 1) || AcademicPeriod.order(created_at: :desc).first
+        
+        if periodo_actual
+          # 🛠️ CORRECCIÓN: Quitamos el "seccion: :nivele" que causaba el ConfigurationError
+          # Dejamos solo los includes básicos y seguros de la relación directa
+          @enrollments = Enrollment.joins(:alumno)
+                                  .where(alumnos: { representante_id: @representante.cedula })
+                                  .where(academic_period_id: periodo_actual.id)
+                                  .includes(:alumno, :seccion)
+        else
+          @enrollments = []
+        end
+      else
+        @enrollments = nil
+      end
+    end
+
+    render :consulta_inscripcion 
+  end
+
   def nomina_completa
   @docentes = Docente.all
     @obreros = Obrero.all

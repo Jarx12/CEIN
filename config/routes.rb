@@ -13,7 +13,8 @@ Rails.application.routes.draw do
   get "/rrhh", to: "presentacion#rrhh", as: "rrhh"
   get "/rrhh/nomina-completa", to: "presentacion#nomina_completa", as: "nomina_completa"
   get "/zadmin", to: "presentacion#zadmin", as: "zadmin"
-
+  get "/consulta-inscripcion", to: "presentacion#consulta_inscripcion", as: "consulta_inscripcion"
+  
   # 3.1 Área de los docentes
   namespace :profesor do
     resource :dashboard, only: [:show]
