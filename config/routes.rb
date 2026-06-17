@@ -70,6 +70,7 @@ end
   collection do
     get :revision  # /alumnos/revision
     get :retirados
+    get :archivo_historico
   end
   
   member do
@@ -77,6 +78,7 @@ end
     get :retirar
     patch :procesar_retiro
     patch :reincorporar
+    post :reinscribir_historico
   end
   end
   resources :docentes

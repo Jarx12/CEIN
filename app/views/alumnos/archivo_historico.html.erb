@@ -1,0 +1,93 @@
+<%# app/views/alumnos/archivo_historico.html.erb %>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-dark mb-0">Archivo Histórico de Retirados 🗄️</h1>
+      <p class="text-muted mb-0">Consulta periodos anteriores y reincorpora alumnos al periodo actual</p>
+    </div>
+    <%= link_to alumnos_path, class: "btn btn-outline-secondary rounded-pill px-4 shadow-sm" do %>
+      ↩️ Volver al Index
+    <% end %>
+  </div>
+
+  <% # BARRA DE FILTRADO CON SELECTOR %>
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-light">
+    <%= form_with url: archivo_historico_alumnos_path, method: :get, local: true, class: "row g-3 align-items-center" do |f| %>
+      <div class="col-md-6">
+        <%= f.label :periodo_consulta_id, "Seleccione el Periodo Escolar a Consultar:", class: "form-label fw-bold small text-secondary" %>
+        <%= f.collection_select :periodo_consulta_id, @periodo_activos_todos.where.not(status: :active), :id, :name, 
+                                { selected: @periodo_consultado&.id, prompt: "Seleccione un año escolar pasado..." }, 
+                                { class: "form-select rounded-3", onchange: "this.form.submit();" } %>
+      </div>
+      <div class="col-md-6 pt-4 text-md-end">
+        <span class="badge bg-info-subtle text-info-emphasis px-3 py-2 rounded-pill fs-6">
+          Periodo de Destino Actual: <strong><%= @periodo_actual&.name || 'Ninguno activo' %></strong>
+        </span>
+      </div>
+    <% end %>
+  </div>
+
+  <% # TABLA DE RESULTADOS %>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light text-secondary uppercase-subtle">
+          <tr>
+            <th class="ps-4">Alumno</th>
+            <th>Cédula del Representante</th>
+            <th>Último Estatus Registrado</th>
+            <th>Sección en ese Periodo</th>
+            <th class="text-end pe-4">Acción de Reincorporación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @alumnos_historicos.any? && @periodo_consultado %>
+            <% @alumnos_historicos.each do |alumno| %>
+              <% enrollment_viejo = alumno.enrollments.find_by(academic_period_id: @periodo_consultado.id) %>
+              <tr>
+                <td class="ps-4">
+                  <div class="fw-bold text-dark text-capitalize"><%= alumno.nombre_completo %></div>
+                </td>
+                <td><code class="text-secondary"><%= alumno.representante_id %></code></td>
+                <td>
+                  <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill px-2">
+                    ❌ <%= enrollment_viejo.status.humanize %>
+                  </span>
+                </td>
+                <td>
+                  <span class="text-muted"><%= enrollment_viejo.seccion&.nombre_seccion || "Sin sección" %></span>
+                </td>
+                <td class="text-end pe-4">
+                  <%# Formulario en línea para elegir la NUEVA sección y procesar el POST %>
+                  <%= form_with url: reinscribir_historico_alumno_path(alumno), method: :post, class: "d-inline-flex gap-2 align-items-center justify-content-end" do |f| %>
+                    <%= f.hidden_field :periodo_origen_id, value: @periodo_consultado.id %>
+                    
+                    <%# Selector para definir a qué sección del AÑO ACTUAL va el alumno %>
+                    <%= f.collection_select :seccion_id, Seccion.all, :id, :nombre_seccion, 
+                                            { prompt: "Asignar Nueva Sección..." }, 
+                                            { class: "form-select form-select-sm rounded-3 w-auto", required: true } %>
+                    
+                    <%= f.submit "⚡ Reinscribir", 
+                                 class: "btn btn-sm btn-warning fw-bold rounded-pill px-3 shadow-sm", 
+                                 data: { confirm: "¿Desea generar una nueva matrícula activa para este alumno en el periodo corriente?" } %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted">
+                <span class="fs-1 d-block mb-2">📁</span>
+                <% if @periodo_consultado %>
+                  No se encontraron alumnos retirados sin matricular en el periodo <strong><%= @periodo_consultado.name %></strong>.
+                <% else %>
+                  Por favor, seleccione un periodo académico válido para auditar.
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

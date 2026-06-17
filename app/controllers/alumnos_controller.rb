@@ -164,6 +164,35 @@ end
       end
     end
 
+  def archivo_historico
+    @periodo_activos_todos = AcademicPeriod.order(created_at: :desc)
+    @periodo_actual = AcademicPeriod.find_by(status: :active)
+
+    # 1. Capturamos el periodo seleccionado del dropdown, o calculamos el anterior por defecto
+    if params[:periodo_consulta_id].present?
+      @periodo_consultado = AcademicPeriod.find(params[:periodo_consulta_id])
+    else
+      # Busca el periodo más reciente que NO sea el activo actual
+      @periodo_consultado = AcademicPeriod.where.not(status: :active).order(created_at: :desc).first
+    end
+
+    if @periodo_consultado
+      # 2. Buscamos los alumnos cuyo ÚLTIMO estado en el periodo consultado fue 'retirado' (status: 3)
+      # Y nos aseguramos de que NO estén ya inscritos en el periodo actual
+      inscritos_actualmente_ids = Enrollment.where(academic_period: @periodo_actual).select(:alumno_id) if @periodo_actual
+
+      @alumnos_historicos = Alumno.joins(:enrollments)
+                                  .where(enrollments: { 
+                                    academic_period_id: @periodo_consultado.id, 
+                                    status: 3 
+                                  })
+                                  .where.not(id: inscritos_actualmente_ids || [])
+                                  .distinct
+    else
+      @alumnos_historicos = []
+    end
+  end
+
     # POST /alumnos/:id/reinscribir_historico
   def reinscribir_historico
     @alumno = Alumno.find(params[:id])
@@ -174,7 +203,7 @@ end
       return redirect_to @alumno
     end
 
-    # Validamos que el chamo no tenga ya una inscripción este año (por seguridad)
+    # Validamos que el alumno no tenga ya una inscripción este año (por seguridad)
     if @alumno.enrollments.exists?(academic_period: @periodo_activo)
       flash[:alert] = "El alumno ya posee una matrícula generada para el periodo actual."
       return redirect_to @alumno
@@ -190,10 +219,10 @@ end
 
     if @nuevo_enrollment.save
       flash[:notice] = "¡Reincorporación exitosa! Se ha generado la matrícula de #{@alumno.nombre_completo} para el periodo #{@periodo_activo.name}."
-      redirect_to revision_alumnos_path # Lo mandamos a la bandeja de revisión para que Dirección lo apruebe
+      redirect_to archivo_historico_alumnos_path # Lo mandamos a la bandeja de revisión para que Dirección lo apruebe
     else
       flash[:alert] = "Error al reinscribir: #{@nuevo_enrollment.errors.full_messages.to_sentence}"
-      redirect_to @alumno
+      redirect_to @archivo_historico_alumnos_path
     end
   end
 
