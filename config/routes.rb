@@ -7,7 +7,6 @@ Rails.application.routes.draw do
   
   # 2. Raíz y Presentación
   root "presentacion#index"
-  get "/info/noticias", to: "presentacion#noticias", as: "noticias_info"
   get "/info/vision-mision", to: "presentacion#vision_mision", as: "vision_mision_info"
   get "/info/consulta-publica", to: "presentacion#consulta_publica", as: "consulta_publica_info"
   get "/rrhh", to: "presentacion#rrhh", as: "rrhh"
@@ -121,6 +120,11 @@ end
       post :guardar
     end
   end
+
+  #CRUD de eventos para la cartelera de eventos
+  resources :events, only: [:index, :create, :destroy]
+  get "/info/noticias", to: "events#cartelera", as: "noticias_info"
+
 
   # Salud del sistema
   get "up" => "rails/health#show", as: :rails_health_check

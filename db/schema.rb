@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_16_001423) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_18_021052) do
   create_table "academic_periods", force: :cascade do |t|
     t.string "name"
     t.date "start_date"
@@ -129,6 +129,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_16_001423) do
     t.index ["alumno_id"], name: "index_enrollments_on_alumno_id"
     t.index ["approval_status"], name: "index_enrollments_on_approval_status"
     t.index ["seccion_id"], name: "index_enrollments_on_seccion_id"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description", null: false
+    t.date "event_date", null: false
+    t.string "event_time"
+    t.string "location"
+    t.integer "category", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "niveles", force: :cascade do |t|

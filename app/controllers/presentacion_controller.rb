@@ -1,10 +1,8 @@
 class PresentacionController < ApplicationController
     require 'ostruct'
-    allow_unauthenticated_access only: %i[index noticias vision_mision consulta_publica]
+    allow_unauthenticated_access only: %i[index vision_mision consulta_publica]
     before_action :resume_session
   def index
-  end
-  def noticias
   end
   def vision_mision
   end

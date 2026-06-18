@@ -1,0 +1,81 @@
+<%# Section: Cartelera de Eventos Dinámica (Bordes Rectos y Centrado a la Izquierda) %>
+<div class="container py-4" id="cartelera-eventos">
+  
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-0">Noticias y Próximos Eventos</h2>
+    </div>
+    <span class="text-muted small d-none d-md-block">Última actualización: <%= Time.current.strftime("%d/%m/%Y") %></span>
+  </div>
+
+  <div class="d-flex flex-column gap-3">
+    
+    <%# 🔄 Bucle dinámico que lee de la base de datos %>
+    <% if Event.any? %>
+      <% Event.order(event_date: :asc).each do |event| %>
+        
+        <div class="card border rounded-0 shadow-sm bg-white hover-shadow transition-all">
+          <div class="card-body p-4">
+            <div class="row align-items-center g-3 justify-content-start">
+              
+              <%# Bloque Izquierdo: Fecha Extraída Dinámicamente %>
+              <div class="col-auto">
+                <%# Si tu servidor está en español o inglés, controlamos el mes con una estructura segura %>
+                <% 
+                  meses = { 1=>"Ene", 2=>"Feb", 3=>"Mar", 4=>"Abr", 5=>"May", 6=>"Jun", 7=>"Jul", 8=>"Ago", 9=>"Sep", 10=>"Oct", 11=>"Nov", 12=>"Dic" }
+                  color_calendario = event.category == "convocatoria" ? "#0d6efd" : "#334155"
+                %>
+                <div class="text-white text-center rounded-0 p-2 shadow-sm d-flex flex-column justify-content-center" 
+                     style="width: 65px; height: 65px; background-color: <%= color_calendario %> !important;">
+                  <span class="d-block fw-bold fs-4 lh-1"><%= event.event_date.day %></span>
+                  <span class="text-uppercase small fw-bold" style="font-size: 0.7rem;"><%= meses[event.event_date.month] %></span>
+                </div>
+              </div>
+
+              <%# Bloque Central: Contenido de la Directora %>
+              <div class="col text-start">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-1 justify-content-start">
+                  <span class="badge <%= event.category_badge_class %> rounded-0 fw-semibold" style="font-size: 0.75rem;">
+                    <%= event.category_label %>
+                  </span>
+                  <h5 class="fw-bold text-dark mb-0 me-2"><%= event.title %></h5>
+                </div>
+                <p class="text-muted small mb-0">
+                  <%= event.description %>
+                </p>
+              </div>
+
+              <%# Bloque Derecho: Ubicación y Hora %>
+              <div class="col-md-auto text-md-start border-start-md ps-md-3 mt-3 mt-md-0">
+                <div class="text-muted small mb-1">🕒 <%= event.event_time.presence || "Por definir" %></div>
+                <div class="text-muted small">📍 <%= event.location.presence || "Instalaciones" %></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+    <% else %>
+      <% # Mensaje de cortesía si no hay eventos activos %>
+      <div class="p-4 border bg-light text-center text-muted rounded-0">
+        📌 No hay eventos ni convocatorias programadas para los próximos días.
+      </div>
+    <% end %>
+
+  </div>
+</div>
+
+<style>
+  .transition-all { transition: all 0.25s ease-in-out; }
+  .hover-shadow:hover {
+    transform: translateX(4px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.05) !important;
+  }
+  @media (min-width: 768px) {
+    .border-start-md {
+      border-left: 1px solid #e2e8f0 !important;
+      min-width: 160px;
+    }
+  }
+</style>
