@@ -1,7 +1,7 @@
 class DocentesController < ApplicationController
 
   before_action :set_docente, only: %i[show edit update destroy] #Antes de show edit, update y destroy, se ejecuta set_docente (guardar en una variable un registro del modelo Docente por ID)
-
+  before_action :authenticate_admin!
   def index
         @docentes = Docente.all
   end
@@ -46,4 +46,11 @@ class DocentesController < ApplicationController
   def docente_params
       params.require(:docente).permit(:name, :name2, :apellido, :apellido2, :cedula, :telefono, :direccion, :birthday, :ministerio_id, :foto_titulo, :antecedentes_penales)
     end
+
+  def authenticate_admin!
+    unless current_user&.admin? || current_user&.directora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a RRHH Docentes."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
+  end
 end

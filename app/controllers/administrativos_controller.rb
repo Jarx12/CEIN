@@ -1,6 +1,7 @@
 class AdministrativosController < ApplicationController
 
   before_action :set_administrativo, only: %i[show edit update destroy] #Antes de show edit, update y destroy, se ejecuta set_administrativo (guardar en una variable un registro del modelo Administrativo por ID)
+  before_action :authenticate_admin!
 
   def index
         @administrativos = Administrativo.all
@@ -46,4 +47,12 @@ class AdministrativosController < ApplicationController
   def administrativo_params
       params.require(:administrativo).permit(:name, :name2, :apellido, :apellido2, :cedula, :telefono, :direccion, :birthday, :cargo_id, :ministerio_id, :foto_titulo, :antecedentes_penales)
     end
+
+  def authenticate_admin!
+    unless current_user&.admin? || current_user&.directora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a RRHH Administrativos."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
+  end
+
 end

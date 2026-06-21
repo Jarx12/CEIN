@@ -1,7 +1,7 @@
 class SeccionsController < ApplicationController
 
   before_action :set_seccion, only: %i[show edit update destroy] #Antes de show edit, update y destroy, se ejecuta set_seccion (guardar en una variable un registro del modelo Seccion por ID)
-
+  before_action :authenticate_academic_author!
   def index
     @seccions = Seccion.all
     if params[:from] == 'zadmin'
@@ -53,4 +53,10 @@ class SeccionsController < ApplicationController
     def seccion_params
       params.require(:seccion).permit(:nombre_seccion, :numero_salon, :nivel_id, :docente_id, :capacidad)
     end
+  def authenticate_academic_author!
+    unless current_user&.admin? || current_user&.directora? || current_user&.coordinadora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Admin Secciones."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
+  end
 end

@@ -1,6 +1,6 @@
 class ScoresController < ApplicationController
   before_action :set_score, only: %i[edit update destroy]
-
+  before_action :authenticate_admin!
 def index
   # 1. Tu lógica original para el listado inferior (Periodo actual)
   @enrollments_con_notas = Enrollment.joins(:scores)
@@ -168,4 +168,9 @@ end
     else valor # Si mandan algo diferente, que la validación falle
     end
   end
+  def authenticate_admin!
+    unless current_user&.admin? || current_user&.directora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Admin Calificaciones."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
 end

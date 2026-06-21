@@ -45,7 +45,6 @@ class ApplicationController < ActionController::Base
       redirect_to root_path, alert: "Acceso denegado: Solo personal docente."
     end
   end
-
   def check_secretaria_role!
     unless current_user.role.to_s.downcase == "secretaria"
       redirect_to root_path, alert: "Acceso denegado: Solo personal de secretaría."

@@ -1,6 +1,8 @@
 class AlumnosController < ApplicationController
 
-  before_action :set_alumno, only: %i[show edit update destroy retirar procesar_retiro reincorporar] #Antes de show edit, update y destroy, se ejecuta set_alumno (guardar en una variable un registro del modelo Alumno por ID)
+before_action :set_alumno, only: %i[show edit update destroy retirar procesar_retiro reincorporar] #Antes de show edit, update y destroy, se ejecuta set_alumno (guardar en una variable un registro del modelo Alumno por ID)
+before_action :authenticate_users!
+before_action :authenticate_academic_author!, only: [:confirmar_inscripcion, :destroy, :reincorporar, :procesar_retiro]
 
 def index
   @periodo_activo = AcademicPeriod.find_by(status: :active)
@@ -213,7 +215,7 @@ end
     # Gracias al callback 'before_validation' que pusimos antes, el status nacerá automáticamente en :active (0)
     @nuevo_enrollment = @alumno.enrollments.new(
       academic_period_id: @periodo_activo.id,
-      seccion_id: params[:seccion_id], # La sala de 3er nivel elegida en el formulario
+      seccion_id: params[:seccion_id], # La seccion elegida en el formulario
       approval_status: :pendiente      # Nace pendiente para que Dirección le dé el visto bueno
     )
 
@@ -226,15 +228,31 @@ end
     end
   end
 
-  private
-    def set_alumno
-      @alumno = Alumno.find(params[:id])
-    end
+private
+
+  def set_alumno
+    @alumno = Alumno.find(params[:id])
+  end
 
   def alumno_params
-  params.require(:alumno).permit(
-    :name, :name2, :apellido, :apellido2, :representante_id, :birthday, :representante_secundario_id, :acta_nacimiento,
-    enrollments_attributes: [:id, :academic_period_id, :seccion_id, :grade_level, :_destroy, :status, :approval_status, :withdrawal_reason]
-  )
-end
+    params.require(:alumno).permit(
+      :name, :name2, :apellido, :apellido2, :representante_id, :birthday, :representante_secundario_id, :acta_nacimiento,
+      enrollments_attributes: [:id, :academic_period_id, :seccion_id, :grade_level, :_destroy, :status, :approval_status, :withdrawal_reason]
+    )
+  end # 🛠️ CORRECCIÓN: Faltaba cerrar este método
+
+  def authenticate_users!
+    unless current_user&.admin? || current_user&.directora? || current_user&.coordinadora? || current_user&.secretaria?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Alumnos."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
+  end
+
+  def authenticate_academic_author!
+    unless current_user&.admin? || current_user&.directora? || current_user&.coordinadora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó modificar Alumnos."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para realizar esta operación."
+    end
+  end
+
 end

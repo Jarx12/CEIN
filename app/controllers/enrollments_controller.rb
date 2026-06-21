@@ -1,5 +1,6 @@
 # app/controllers/enrollments_controller.rb
 class EnrollmentsController < ApplicationController
+  before_action :authenticate_users!
   def create
     @student = Student.find(params[:student_id])
     @periodo_activo = AcademicPeriod.current
@@ -23,5 +24,11 @@ class EnrollmentsController < ApplicationController
 
   def enrollment_params
     params.require(:enrollment).permit(:grade_level, :section)
+  end
+  def authenticate_users!
+    unless current_user&.admin? || current_user&.directora? || current_user&.coordinadora? || current_user&.secretaria?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Inscripciones."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
   end
 end

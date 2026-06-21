@@ -1,6 +1,6 @@
 class NivelesController < ApplicationController
   before_action :set_nivel, only: [:edit, :update, :destroy]
-  
+  before_action :authenticate_admin!
   def index
     @niveles = Nivel.all.order(:nombre_nivel)
   end
@@ -46,6 +46,12 @@ class NivelesController < ApplicationController
 
   def nivel_params
     params.require(:nivel).permit(:nombre_nivel)
+  end
+  def authenticate_admin!
+    unless current_user&.admin? || current_user&.directora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Admin Niveles."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
   end
 
 end

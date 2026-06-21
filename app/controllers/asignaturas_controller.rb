@@ -1,6 +1,7 @@
 class AsignaturasController < ApplicationController
 
   before_action :set_asignatura, only: %i[edit update destroy] #Antes de show edit, update y destroy, se ejecuta set_asignatura (guardar en una variable un registro del modelo Asignatura por ID)
+  before_action :authenticate_academic_author!
 
   def index
     @asignaturas = Asignatura.includes(:nivel).all
@@ -48,4 +49,12 @@ class AsignaturasController < ApplicationController
     def asignatura_params
       params.require(:asignatura).permit(:nombre_asignatura, :codigo_asignatura, :nivel_id)
     end
+
+  def authenticate_academic_author!
+    unless current_user&.admin? || current_user&.directora? || current_user&.coordinadora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó modificar Asignaturas."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para realizar esta operación."
+    end
+  end
+
 end

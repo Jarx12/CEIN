@@ -1,7 +1,7 @@
 class RepresentantesController < ApplicationController
 
   before_action :set_representante, only: %i[show edit update destroy] #Antes de show edit, update y destroy, se ejecuta set_representante (guardar en una variable un registro del modelo Representante por ID)
-
+  before_action :authenticate_users!
   def index
         @representantes = Representante.all
   end
@@ -53,3 +53,13 @@ class RepresentantesController < ApplicationController
       params.require(:representante).permit(:name, :name2, :apellido, :apellido2, :cedula, :telefono, :direccion, :birthday)
   end
 end
+
+
+private
+  def authenticate_users!
+      unless current_user&.admin? || current_user&.directora? || current_user&.coordinadora? || current_user&.secretaria?
+        logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Representantes."
+        redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+      end
+    end
+

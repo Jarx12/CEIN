@@ -1,6 +1,6 @@
 class AttendancesController < ApplicationController
   before_action :set_seccion, only: [:nueva_lista]
-
+  before_action :authenticate_admin!
   # 1. EVITA DUPLICADOS: Trae las fechas únicas del historial general
   def index
     @fechas = Attendance.select(:fecha).distinct.order(fecha: :desc)  
@@ -102,5 +102,11 @@ end
     @seccion = Seccion.find(params[:seccion_id])
   rescue ActiveRecord::RecordNotFound
     redirect_to attendances_path, alert: "Selecciona una sección válida."
+  end
+  def authenticate_admin!
+    unless current_user&.admin? || current_user&.directora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Admin Asistencias."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
   end
 end

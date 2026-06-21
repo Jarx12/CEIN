@@ -1,7 +1,8 @@
 class PresentacionController < ApplicationController
     require 'ostruct'
-    allow_unauthenticated_access only: %i[index vision_mision consulta_publica]
+    allow_unauthenticated_access only: %i[index vision_mision consulta_publica consulta_inscripcion]
     before_action :resume_session
+    before_action :authenticate_admin!, only: %i[zadmin rrhh nomina_completa]
   def index
   end
   def vision_mision
@@ -25,8 +26,6 @@ class PresentacionController < ApplicationController
         periodo_actual = AcademicPeriod.find_by(status: 1) || AcademicPeriod.order(created_at: :desc).first
         
         if periodo_actual
-          # 🛠️ CORRECCIÓN: Quitamos el "seccion: :nivele" que causaba el ConfigurationError
-          # Dejamos solo los includes básicos y seguros de la relación directa
           @enrollments = Enrollment.joins(:alumno)
                                   .where(alumnos: { representante_id: @representante.cedula })
                                   .where(academic_period_id: periodo_actual.id)
@@ -95,5 +94,14 @@ class PresentacionController < ApplicationController
     # Ordenamos por fecha de ingreso para que el reporte sea limpio
     @nomina_unificada.sort_by! { |empleado| empleado.fecha_ingreso.to_s.downcase }
   end
+
+private
+  def authenticate_admin!
+      unless current_user&.admin? || current_user&.directora?
+        logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a ZADMIN."
+        redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+      end
+    end
+
 
 end

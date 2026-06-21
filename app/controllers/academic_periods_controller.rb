@@ -2,6 +2,7 @@
 class AcademicPeriodsController < ApplicationController
 
 before_action :set_academic_period, only: [:edit, :update, :show, :activate, :close]
+before_action :authenticate_admin!
 
 def index
     @academic_periods = AcademicPeriod.order(created_at: :desc)
@@ -62,5 +63,13 @@ def academic_period_params
     params.require(:academic_period).permit(:name, :start_date, :end_date)
 
 end
+
+def authenticate_admin!
+    unless current_user&.admin? || current_user&.directora?
+      logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a ZADMIN."
+      redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
+    end
+  end
+
 
 end
