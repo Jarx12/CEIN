@@ -1,47 +1,42 @@
 class ScoresController < ApplicationController
   before_action :set_score, only: %i[edit update destroy]
   before_action :authenticate_admin!
-def index
-  # 1. Tu lógica original para el listado inferior (Periodo actual)
-  @enrollments_con_notas = Enrollment.joins(:scores)
-                                     .where(academic_period: AcademicPeriod.current)
-                                     .distinct
-                                     .includes(:alumno)
 
-  # 2. Lógica 100% Rails para el Buscador Histórico
-  # Capturamos lo que venga del formulario
-  @periodo_seleccionado_id = params[:historico_periodo_id]
-  @seccion_seleccionada_id = params[:historico_seccion_id]
+  def index
+    # 1. Tu lógica original para el listado inferior (Periodo actual)
+    @enrollments_con_notas = Enrollment.joins(:scores)
+                                       .where(academic_period: AcademicPeriod.current)
+                                       .distinct
+                                       .includes(:alumno)
 
-  if @periodo_seleccionado_id.present? && @seccion_seleccionada_id.present?
-    # Buscamos las matrículas (enrollments) que coincidan con ese salón y ese año
-    @enrollments_filtrados = Enrollment.where(
-      academic_period_id: @periodo_seleccionado_id,
-      seccion_id: @seccion_seleccionada_id
-    ).includes(:alumno).order("alumnos.apellido ASC")
-  else
-    @enrollments_filtrados = []
+    # 2. Lógica 100% Rails para el Buscador Histórico
+    @periodo_seleccionado_id = params[:historico_periodo_id]
+    @seccion_seleccionada_id = params[:historico_seccion_id]
+
+    if @periodo_seleccionado_id.present? && @seccion_seleccionada_id.present?
+      @enrollments_filtrados = Enrollment.where(
+        academic_period_id: @periodo_seleccionado_id,
+        seccion_id: @seccion_seleccionada_id
+      ).includes(:alumno).order("alumnos.apellido ASC")
+    else
+      @enrollments_filtrados = []
+    end
   end
-end
 
   def new
-    # Si venimos del selector, ya tendremos seccion_id y subject_id
     @seccion = Seccion.find_by(id: params[:seccion_id])
     @subject = Asignatura.find_by(id: params[:subject_id])
     
     @score = Score.new(asignatura: @subject)
     
     if @seccion
-      # Solo alumnos de esta sección en el periodo actual
       @enrollments = @seccion.enrollments.where(academic_period: AcademicPeriod.current).includes(:alumno)
     else
-      # Si alguien entra a /new directamente, redirigimos al selector
       redirect_to selector_scores_path(mode: 'individual'), alert: "Debe seleccionar una sección primero."
     end
   end
 
   def create
-    # Convertimos la nota antes de inicializar
     processed_params = score_params.merge(nota: convert_nota(score_params[:nota]))
     @score = Score.new(processed_params)
     
@@ -54,7 +49,6 @@ end
   end
 
   def update
-    # Convertimos la nota antes de actualizar
     if @score.update(score_params.merge(nota: convert_nota(score_params[:nota])))
       redirect_to alumno_scores_path(@score.enrollment.alumno), 
                   notice: "Calificación actualizada correctamente."
@@ -79,7 +73,6 @@ end
           lapso: s_params[:lapso]
         )
         
-        # Convertimos la letra a número aquí también
         score.update!(nota: convert_nota(s_params[:nota]))
       end
     end
@@ -94,14 +87,12 @@ end
   def notas_por_alumno
     @alumno = Alumno.find(params[:id])
     
-    # 📑 Si pasamos un periodo por el formulario lo usamos, si no, usamos el actual por defecto
     if params[:periodo_id].present?
       @periodo_consultado = AcademicPeriod.find(params[:periodo_id])
     else
       @periodo_consultado = AcademicPeriod.current
     end
 
-    # Buscamos la matrícula correspondiente a ESE año escolar específico
     @enrollment = @alumno.enrollments.find_by(academic_period: @periodo_consultado)
 
     if @enrollment
@@ -117,33 +108,30 @@ end
     redirect_to scores_path
   end
 
-def selector
-  # Guardamos el modo (individual o masiva) para saber a dónde enviar el form
-  @mode = params[:mode] || 'individual' 
-  @seccion = Seccion.find_by(id: params[:seccion_id])
-  
-  if @seccion
-    # Filtramos las asignaturas por el nivel de la sección
-    @asignaturas = Asignatura.where(nivel_id: @seccion.nivel_id)
-  else
-    @asignaturas = []
+  def selector
+    @mode = params[:mode] || 'individual' 
+    @seccion = Seccion.find_by(id: params[:seccion_id])
+    
+    if @seccion
+      @asignaturas = Asignatura.where(nivel_id: @seccion.nivel_id)
+    else
+      @asignaturas = []
+    end
   end
-end
 
-def bulk_edit
-@seccion = Seccion.find(params[:seccion_id])
+  def bulk_edit
+    @seccion = Seccion.find(params[:seccion_id])
     @subject = Asignatura.find(params[:subject_id])
     
-    # only show students currently enrolled in this section for the active period
     @enrollments = Enrollment.where(
       seccion: @seccion, 
       academic_period: AcademicPeriod.current
-    ).includes(:alumno) # .includes avoids N+1 query
+    ).includes(:alumno)
     
     if @enrollments.empty?
       redirect_to selector_scores_path, alert: "No hay alumnos inscritos en esta sección."
     end
-end
+  end
 
   private
 
@@ -155,9 +143,8 @@ end
     params.require(:score).permit(:nota, :asignatura_id, :enrollment_id, :lapso)
   end
 
-  # Lógica de conversión centralizada
   def convert_nota(valor)
-    return valor if valor.is_a?(Numeric) || valor.match?(/^\d+$/) # Si ya es número, lo dejamos
+    return valor if valor.is_a?(Numeric) || valor.match?(/^\d+$/)
     
     case valor.to_s.upcase
     when 'A' then 20
@@ -165,12 +152,15 @@ end
     when 'C' then 10
     when 'D' then 5
     when 'E' then 0
-    else valor # Si mandan algo diferente, que la validación falle
+    else valor
     end
   end
+
   def authenticate_admin!
     unless current_user&.admin? || current_user&.directora?
       logger.warn "ALERTA DE SEGURIDAD: Usuario #{current_user&.email_address} intentó acceder a Admin Calificaciones."
       redirect_to dashboard_path_for_current_user, alert: "No tienes permisos para acceder a este panel."
     end
-end
+  end 
+
+end # Cierre final de la clase ScoresController
